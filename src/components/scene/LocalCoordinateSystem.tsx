@@ -10,20 +10,36 @@ class LocalCoordinateSystem extends THREE.Object3D {
     this.createAxis(new THREE.Vector3(1, 0, 0), "white", "X");
     this.createAxis(new THREE.Vector3(0, 1, 0), "white", "Y");
     this.createAxis(new THREE.Vector3(0, 0, 1), "white", "Z");
-
-    //this.createQuaternion(time, quaternion1, "blue");
-    //this.createQuaternion(time, quaternion2, "red");
   }
 
-  updateQuaternionLine(
-    id: number,
-    time: number,
-    quaternion: TrigonometricalQuaternion,
-    color: string
-  ) {
-    const object = this.getObjectByName(`quaternionLine-${id}`);
-    const line = object as THREE.Line;
+  updateSpriteScaleForLabel(camera: THREE.Camera, label: string) {
+    const sprite = this.getObjectByName(`sprite-${label}`);
+    if (sprite) {
+      const distance = camera.position.distanceTo(sprite.position);
+      const scale = distance * 0.02; // Коэффициент масштабирования; подберите подходящее значение
+      sprite.scale.set(scale, scale, 1);
+    }
+  }
 
+  // distance from point to axe
+  // axe is only one point, another point of axe is (0, 0, 0)
+  getDistanceFromPointToAxe(
+    point: THREE.Vector3,
+    axePoint: THREE.Vector3
+  ): number {
+    const d2 =
+      ((axePoint.y * point.z - axePoint.z * point.y) ** 2 +
+        (axePoint.x * point.z - axePoint.z * point.x) ** 2 +
+        (axePoint.x * point.y - axePoint.y * point.x) ** 2) /
+      (axePoint.x ** 2 + axePoint.y ** 2 + axePoint.z ** 2);
+
+    return Math.sqrt(d2);
+  }
+
+  getThreeQuaternionFromTrigonometricalQuaternion(
+    time: number,
+    quaternion: TrigonometricalQuaternion
+  ): THREE.Quaternion {
     const phi0Radians = (quaternion.phi0 * Math.PI) / 180;
     const angularFrequency = 2 * Math.PI * quaternion.nu;
     const cos = Math.cos(phi0Radians + angularFrequency * time);
@@ -38,19 +54,151 @@ class LocalCoordinateSystem extends THREE.Object3D {
     const y = len > 0 ? (quaternion.n.n2 / len) * sin : 0;
     const z = len > 0 ? (quaternion.n.n3 / len) * sin : 0;
 
-    const newPoints = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(x, y, z)];
+    return new THREE.Quaternion(x, y, z, w);
+  }
+
+  createOrUpdateCylinder(
+    id: string,
+    target: THREE.Vector3,
+    radius: number,
+    color: number,
+    opacity: number
+  ): void {
+    const origin = new THREE.Vector3(0, 0, 0);
+    const direction = new THREE.Vector3()
+      .subVectors(target, origin)
+      .normalize();
+    const length = 20; // Очень большое значение для бесконечного цилиндра
+
+    let cylinder = this.getObjectByName(
+      `quaternionCylinder-${id}`
+    ) as THREE.Mesh;
+
+    if (cylinder) {
+      // Если цилиндр существует, обновляем его материал и геометрию
+      if (cylinder && cylinder.material instanceof THREE.MeshBasicMaterial) {
+        cylinder.material.color.set(color);
+        cylinder.material.opacity = opacity;
+      }
+      cylinder.geometry.dispose(); // Удаляем старую геометрию
+      cylinder.geometry = new THREE.CylinderGeometry(
+        radius,
+        radius,
+        length,
+        16
+      ); // Создаем новую геометрию
+    } else {
+      // Создание нового цилиндра
+      const geometry = new THREE.CylinderGeometry(radius, radius, length, 16);
+      const material = new THREE.MeshBasicMaterial({
+        color: color, // Цвет цилиндра
+        transparent: true, // Включаем прозрачность
+        opacity: opacity, // Задаем полупрозрачность
+        wireframe: true,
+      });
+
+      cylinder = new THREE.Mesh(geometry, material);
+      cylinder.name = `quaternionCylinder-${id}`;
+      this.add(cylinder);
+    }
+
+    // Настройка позиции и ориентации
+    const axis = new THREE.Vector3(0, 1, 0);
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(
+      axis,
+      direction
+    );
+    cylinder.quaternion.copy(quaternion);
+    //cylinder.setRotationFromQuaternion(quaternion);
+
+    // Центрируем цилиндр между началом координат и целевой точкой
+    cylinder.position.copy(origin).add(target).multiplyScalar(0.5);
+  }
+
+  updateThreeQuaternionLine(
+    id: string,
+    threeQuaternion: THREE.Quaternion,
+    color: number
+  ) {
+    const object = this.getObjectByName(`quaternionLine-${id}`);
+    const line = object as THREE.Line;
+
+    const newPoints = [
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(
+        threeQuaternion.x,
+        threeQuaternion.y,
+        threeQuaternion.z
+      ),
+    ];
+
+    const ray = new THREE.Ray(
+      newPoints[0],
+      new THREE.Vector3().subVectors(newPoints[1], newPoints[0]).normalize()
+    );
+    const length = 50;
+    const farPoint1 = ray.at(-length, new THREE.Vector3());
+    const farPoint2 = ray.at(length, new THREE.Vector3());
+    const points = [farPoint1, farPoint2];
 
     if (!line) {
-      const material = new THREE.LineBasicMaterial({ color: color });
-      const points = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(x, y, z)];
+      const dashedMaterial = new THREE.LineDashedMaterial({
+        color: color,
+        //transparent: true,
+        opacity: 1.0,
+        //dashSize: 0.1,
+        //gapSize: 0.1,
+      });
+      const material = new THREE.LineBasicMaterial({ color });
+
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
-      const newLine = new THREE.Line(geometry, material);
-      newLine.name = `quaternionLine-${id}`;
-      this.add(newLine);
+
+      const dashedLine = new THREE.Line(geometry, material/*dashedMaterial*/);
+      dashedLine.computeLineDistances();
+      dashedLine.name = `quaternionLine-${id}`;
+      this.add(dashedLine);
+
+      // Создаем сферу
+      const sphereGeometry = new THREE.SphereGeometry(0.025, 32, 32);
+      const sphereMaterial = new THREE.MeshBasicMaterial({ color: color });
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+      sphere.name = `quaternionSphere-${id}`;
+      sphere.position.set(
+        threeQuaternion.x,
+        threeQuaternion.y,
+        threeQuaternion.z
+      ); // Устанавливаем позицию сферы на конец линии
+      this.add(sphere);
     } else {
-      line.geometry.setFromPoints(newPoints);
+      line.geometry.setFromPoints(points);
       line.geometry.attributes.position.needsUpdate = true;
+
+      // Находим и обновляем сферу
+      const sphere = this.getObjectByName(
+        `quaternionSphere-${id}`
+      ) as THREE.Mesh;
+      if (sphere) {
+        sphere.position.set(
+          threeQuaternion.x,
+          threeQuaternion.y,
+          threeQuaternion.z
+        ); // Обновляем позицию сферы
+      }
     }
+  }
+
+  updateQuaternionLine(
+    id: string,
+    time: number,
+    quaternion: TrigonometricalQuaternion,
+    color: number
+  ): THREE.Quaternion {
+    const threeQuaternion =
+      this.getThreeQuaternionFromTrigonometricalQuaternion(time, quaternion);
+
+    this.updateThreeQuaternionLine(id, threeQuaternion, color);
+
+    return threeQuaternion;
   }
 
   createAxis(direction: THREE.Vector3, color: string, label: string): void {
@@ -65,7 +213,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
     // Добавление засечек
     for (let i = 0.1; i <= 1; i += 0.1) {
       const tick = new THREE.Mesh(
-        new THREE.SphereGeometry(0.02),
+        new THREE.SphereGeometry(0.01),
         new THREE.MeshBasicMaterial({ color })
       );
       tick.position.copy(direction.clone().multiplyScalar(i));
@@ -74,12 +222,13 @@ class LocalCoordinateSystem extends THREE.Object3D {
 
     // Добавление лейбла
     const sprite = this.createLabel(label, color);
+    sprite.name = `sprite-${label}`;
     sprite.position.copy(direction.clone().multiplyScalar(1.3));
     line.add(sprite);
 
     this.add(line);
 
-    console.log(`Axis ${label}`, line);
+    // console.log(`Axis ${label}`, line);
   }
 
   createLabel(text: string, color: string) {
