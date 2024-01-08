@@ -26,6 +26,13 @@ class LocalCoordinateSystem extends THREE.Object3D {
     );
 
     let normalizedDirection = directionVector.clone().normalize();
+    // normalizedDirection.x = Math.abs(normalizedDirection.x);
+    // normalizedDirection.y = Math.abs(normalizedDirection.y);
+    if(normalizedDirection.z < 0) {
+      normalizedDirection.x = - normalizedDirection.x;
+      normalizedDirection.y = - normalizedDirection.y;            
+      normalizedDirection.z = - normalizedDirection.z;
+    }
     // Выбираем расстояние для камеры, например, 2.5 единиц
     const distance = 10;
     // Вычисляем позицию камеры как точку на противоположной стороне единичного шара
