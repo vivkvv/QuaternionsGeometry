@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 import QuaternionPanel from "./components/QuaternionPanel";
 import PlotPanel from "./components/PlotPanel";
-import { TrigonometricalQuaternion } from "./TrigonometricalQuaternion";
-import QuaternionManager from "./QuaternionManager";
+// import { TrigonometricalQuaternion } from "./TrigonometricalQuaternion";
+//import QuaternionManager from "./QuaternionManager";
 
 // function App() {
 //   return (
@@ -49,6 +49,8 @@ const App = () => {
     nu: 0,
     n: { n1: 0, n2: 0, n3: 0 },
   });
+  const [coordinateSystem, setCoordinateSystem] = useState(0);
+  const [isOrthographicCamera, setOrthographicCamera] = useState(false);
 
   // Логирование при изменении time
   useEffect(() => {
@@ -79,6 +81,10 @@ const App = () => {
         time={time}
         quaternion1={quaternion1}
         quaternion2={quaternion2}
+        coordinateSystem={coordinateSystem}
+        setCoordinateSystem={setCoordinateSystem}
+        isOrthographicCamera={isOrthographicCamera}
+        setOrthographicCamera={setOrthographicCamera}
       />
     </div>
   );

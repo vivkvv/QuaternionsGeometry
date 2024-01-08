@@ -2,14 +2,38 @@
 import * as THREE from "three";
 // import QuaternionProperties from "../QuaternionProperties";
 import { TrigonometricalQuaternion } from "../../TrigonometricalQuaternion";
+// import { OperationCanceledException } from "typescript";
 
 class LocalCoordinateSystem extends THREE.Object3D {
   constructor() {
     super();
+
+    // const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // цвет и интенсивность
+    // directionalLight.position.set(5, 5, 5); // позиция источника света
+    // this.add(directionalLight);
+
     // Здесь можно добавить оси, сетку и другие элементы
     this.createAxis(new THREE.Vector3(1, 0, 0), "white", "X");
     this.createAxis(new THREE.Vector3(0, 1, 0), "white", "Y");
     this.createAxis(new THREE.Vector3(0, 0, 1), "white", "Z");
+  }
+
+  adjustCamera(camera: THREE.Camera, quaternion: THREE.Quaternion) {
+    const directionVector = new THREE.Vector3(
+      quaternion.x,
+      quaternion.y,
+      quaternion.z
+    );
+
+    let normalizedDirection = directionVector.clone().normalize();
+    // Выбираем расстояние для камеры, например, 2.5 единиц
+    const distance = 10;
+    // Вычисляем позицию камеры как точку на противоположной стороне единичного шара
+    const cameraPosition = normalizedDirection.multiplyScalar(-distance);
+    // Устанавливаем позицию камеры
+    camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    // Направляем взгляд камеры на начало координат
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
   }
 
   updateSpriteScaleForLabel(camera: THREE.Camera, label: string) {
@@ -27,11 +51,16 @@ class LocalCoordinateSystem extends THREE.Object3D {
     point: THREE.Vector3,
     axePoint: THREE.Vector3
   ): number {
+    const a2 = axePoint.x ** 2 + axePoint.y ** 2 + axePoint.z ** 2;
+    if (a2 === 0) {
+      return 0;
+    }
+
     const d2 =
       ((axePoint.y * point.z - axePoint.z * point.y) ** 2 +
         (axePoint.x * point.z - axePoint.z * point.x) ** 2 +
         (axePoint.x * point.y - axePoint.y * point.x) ** 2) /
-      (axePoint.x ** 2 + axePoint.y ** 2 + axePoint.z ** 2);
+      a2;
 
     return Math.sqrt(d2);
   }
@@ -68,7 +97,8 @@ class LocalCoordinateSystem extends THREE.Object3D {
     const direction = new THREE.Vector3()
       .subVectors(target, origin)
       .normalize();
-    const length = 20; // Очень большое значение для бесконечного цилиндра
+    // const distanceToTarget = target.length(); // Расстояние до целевой точки
+    const length = 4; // Math.min(distanceToTarget * 2, 2); // Ограничиваем длину
 
     let cylinder = this.getObjectByName(
       `quaternionCylinder-${id}`
@@ -136,30 +166,30 @@ class LocalCoordinateSystem extends THREE.Object3D {
       newPoints[0],
       new THREE.Vector3().subVectors(newPoints[1], newPoints[0]).normalize()
     );
-    const length = 50;
+    const length = 2;
     const farPoint1 = ray.at(-length, new THREE.Vector3());
     const farPoint2 = ray.at(length, new THREE.Vector3());
     const points = [farPoint1, farPoint2];
 
     if (!line) {
-      const dashedMaterial = new THREE.LineDashedMaterial({
-        color: color,
-        //transparent: true,
-        opacity: 1.0,
-        //dashSize: 0.1,
-        //gapSize: 0.1,
-      });
+      // const dashedMaterial = new THREE.LineDashedMaterial({
+      //   color: color,
+      //   //transparent: true,
+      //   opacity: 1.0,
+      //   //dashSize: 0.1,
+      //   //gapSize: 0.1,
+      // });
       const material = new THREE.LineBasicMaterial({ color });
 
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-      const dashedLine = new THREE.Line(geometry, material/*dashedMaterial*/);
+      const dashedLine = new THREE.Line(geometry, material /*dashedMaterial*/);
       dashedLine.computeLineDistances();
       dashedLine.name = `quaternionLine-${id}`;
       this.add(dashedLine);
 
       // Создаем сферу
-      const sphereGeometry = new THREE.SphereGeometry(0.025, 32, 32);
+      const sphereGeometry = new THREE.SphereGeometry(0.05, 32, 32);
       const sphereMaterial = new THREE.MeshBasicMaterial({ color: color });
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
       sphere.name = `quaternionSphere-${id}`;
