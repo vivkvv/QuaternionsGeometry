@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { TrigonometricalQuaternion } from "./TrigonometricalQuaternion";
 import QuaternionPanel from "./components/QuaternionPanel";
-import QuaternionsPlot from "./components/QuaternionsPlot";
+//import QuaternionsPlot from "./components/QuaternionsPlot";
 /*
 const QuaternionManager: React.FC = () => {
   const [time, setTime] = useState(0);

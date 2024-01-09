@@ -2,40 +2,8 @@ import React, { useEffect, useState } from "react";
 //import logo from './logo.svg';
 import "./App.css";
 import QuaternionPanel from "./components/QuaternionPanel";
-import PlotPanel from "./components/PlotPanel";
-// import { TrigonometricalQuaternion } from "./TrigonometricalQuaternion";
-//import QuaternionManager from "./QuaternionManager";
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// const App: React.FC = () => {
-//   return (
-//     <div style={{ display: 'flex', height: '100vh' }}>
-//       {/* <QuaternionPanel />
-//       <PlotPanel /> */}
-//       <QuaternionManager />
-//     </div>
-//   );
-// };
+// import PlotPanel from "./components/PlotPanel";
+import PlotsManager from "./components/PlotsManager";
 
 const App = () => {
   const [time, setTime] = useState(0);
@@ -49,8 +17,8 @@ const App = () => {
     nu: 0,
     n: { n1: 0, n2: 0, n3: 0 },
   });
-  const [coordinateSystem, setCoordinateSystem] = useState(0);
-  const [isOrthographicCamera, setOrthographicCamera] = useState(false);
+  //const [coordinateSystem, setCoordinateSystem] = useState(0);
+  //const [isOrthographicCamera, setOrthographicCamera] = useState(false);
 
   // Логирование при изменении time
   useEffect(() => {
@@ -77,14 +45,14 @@ const App = () => {
         quaternion2={quaternion2}
         setQuaternion2={setQuaternion2}
       />
-      <PlotPanel
+      <PlotsManager
         time={time}
         quaternion1={quaternion1}
         quaternion2={quaternion2}
-        coordinateSystem={coordinateSystem}
-        setCoordinateSystem={setCoordinateSystem}
-        isOrthographicCamera={isOrthographicCamera}
-        setOrthographicCamera={setOrthographicCamera}
+        //coordinateSystem={coordinateSystem}
+        //setCoordinateSystem={setCoordinateSystem}
+        //isOrthographicCamera={isOrthographicCamera}
+        //setOrthographicCamera={setOrthographicCamera}
       />
     </div>
   );

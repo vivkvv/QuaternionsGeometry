@@ -34,7 +34,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
       normalizedDirection.z = - normalizedDirection.z;
     }
     // Выбираем расстояние для камеры, например, 2.5 единиц
-    const distance = 10;
+    const distance = 5;
     // Вычисляем позицию камеры как точку на противоположной стороне единичного шара
     const cameraPosition = normalizedDirection.multiplyScalar(-distance);
     // Устанавливаем позицию камеры
@@ -47,7 +47,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
     const sprite = this.getObjectByName(`sprite-${label}`);
     if (sprite) {
       const distance = camera.position.distanceTo(sprite.position);
-      const scale = distance * 0.02; // Коэффициент масштабирования; подберите подходящее значение
+      const scale = distance * 0.05; // Коэффициент масштабирования; подберите подходящее значение
       sprite.scale.set(scale, scale, 1);
     }
   }
@@ -196,7 +196,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
       this.add(dashedLine);
 
       // Создаем сферу
-      const sphereGeometry = new THREE.SphereGeometry(0.05, 32, 32);
+      const sphereGeometry = new THREE.SphereGeometry(0.1, 32, 32);
       const sphereMaterial = new THREE.MeshBasicMaterial({ color: color });
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
       sphere.name = `quaternionSphere-${id}`;
