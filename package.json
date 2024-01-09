@@ -1,8 +1,8 @@
 {
   "name": "quaternions",
   "version": "0.1.0",
+  "homepage": "https://vivkvv.github.io/QuaternionsGeometry",  
   "private": true,
-  "homepage": "https://vivkvv.github.io/QuaternionsGeometry",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
