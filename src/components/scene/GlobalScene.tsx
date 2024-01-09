@@ -121,7 +121,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         "1",
         timeRef.current,
         quaternion1Ref.current,
-        0xff0000
+        0x00ff00
       );
 
       const quaternionRight = localSystem.updateQuaternionLine(
@@ -136,7 +136,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         quaternionRight
       );
 
-      localSystem.updateThreeQuaternionLine("3", quaternionResult, 0x00ff00);
+      localSystem.updateThreeQuaternionLine("3", quaternionResult, 0xff0000);
 
       // расстояние от точки первого кватерниона до оси второго
       const r1Axe2 = localSystem.getDistanceFromPointToAxe(
@@ -155,8 +155,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
           quaternionRight.z
         ),
         r1Axe2,
-        0xadd8e6,
-        0.5
+        0x0000ff,
+        0.25
       );
 
       // расстояние от точки второго кватерниона до оси первого
@@ -172,8 +172,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         "5",
         new THREE.Vector3(quaternionLeft.x, quaternionLeft.y, quaternionLeft.z),
         r2Axe1,
-        0xffc0cb,
-        0.5
+        0x00ff00,
+        0.25
       );
 
       if (coordinateSystemRef.current === 0) {

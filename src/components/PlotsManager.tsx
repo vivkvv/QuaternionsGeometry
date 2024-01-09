@@ -29,6 +29,7 @@ const PlotsManager: React.FC<PlotsManagerProps> = ({
       1000
     );
     perspCamera.position.set(4, 1, 1);
+    perspCamera.up.set(0, 0, 1);
 
     const aspect = window.innerWidth / window.innerHeight;
     const frustumSize = 5;
@@ -40,7 +41,8 @@ const PlotsManager: React.FC<PlotsManagerProps> = ({
       0.1,
       1000
     );
-    orthoCamera.position.set(4, 1, 1);
+    orthoCamera.position.set(2, 1, 1);
+    orthoCamera.up.set(0, 0, 1);    
 
     setPerspectiveCamera(perspCamera);
     setOrthographicCamera(orthoCamera);

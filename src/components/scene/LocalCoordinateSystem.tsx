@@ -105,7 +105,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
       .subVectors(target, origin)
       .normalize();
     // const distanceToTarget = target.length(); // Расстояние до целевой точки
-    const length = 4; // Math.min(distanceToTarget * 2, 2); // Ограничиваем длину
+    const length = 5; // Math.min(distanceToTarget * 2, 2); // Ограничиваем длину
 
     let cylinder = this.getObjectByName(
       `quaternionCylinder-${id}`
@@ -122,16 +122,19 @@ class LocalCoordinateSystem extends THREE.Object3D {
         radius,
         radius,
         length,
-        16
+        16,
+        1,
+        //true
       ); // Создаем новую геометрию
     } else {
       // Создание нового цилиндра
-      const geometry = new THREE.CylinderGeometry(radius, radius, length, 16);
+      const geometry = new THREE.CylinderGeometry(radius, radius, length, 16, 1, /*true*/);
       const material = new THREE.MeshBasicMaterial({
         color: color, // Цвет цилиндра
         transparent: true, // Включаем прозрачность
         opacity: opacity, // Задаем полупрозрачность
-        wireframe: true,
+        // wireframe: true,
+        side: THREE.DoubleSide
       });
 
       cylinder = new THREE.Mesh(geometry, material);
