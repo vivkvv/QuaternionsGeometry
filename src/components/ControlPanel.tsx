@@ -21,10 +21,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 }) => {
   return (
     <div className="flex items-center">
-      {/* Кнопка Run с иконкой */}
+      {/* Кнопка Run с иконкой
       <button onClick={() => setIsRunning(!isRunning)}>
         {isRunning ? <FaPause /> : <FaPlay />}
-      </button>
+      </button> */}
 
       {/* Чекбокс для типа камеры */}
       <div className="flex items-center">
