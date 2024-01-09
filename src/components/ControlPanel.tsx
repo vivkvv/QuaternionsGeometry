@@ -1,6 +1,6 @@
 // ControlPanel.tsx
 import React from "react";
-import { FaPlay, FaPause } from "react-icons/fa";
+// import { FaPlay, FaPause } from "react-icons/fa";
 
 interface ControlPanelProps {
   isRunning: boolean;
