@@ -48,11 +48,11 @@ const PlotsManager: React.FC<PlotsManagerProps> = ({
 
   return (
     //<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gridTemplateRows: "1fr 1fr", height: "100vh", width: "100vw" }}>
-    <div className="flex flex-wrap -m-2">
+    <div className="flex flex-wrap h-screen">
     {/* <div className="grid grid-cols-2 grid-rows-2 gap-4"> */}
       {/* Создаем четыре PlotPanel с разными системами координат и камерами */}
       {[0, 1, 2, 3].map((coordinateSystem) => (
-        <div key={coordinateSystem} className="p-2 w-1/2 h-1/2">
+        <div key={coordinateSystem} className="p-1 w-1/2 h-1/2">
           {perspectiveCamera && orthographicCamera && (
             <PlotPanel
               time={time}

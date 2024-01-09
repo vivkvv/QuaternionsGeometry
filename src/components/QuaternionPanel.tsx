@@ -23,16 +23,19 @@ const QuaternionPanel: React.FC<QuaternionPanelProps> = ({
 }) => {
   return (
     <div style={{ width: "25%", padding: "10px", backgroundColor: "#f0f0f0" }}>
-      <div className="flex items-center mb-4">
-        <label className="text-sm font-medium text-gray-700 mr-2">t = </label>
+      <div className="flex items-center mb-4 space-x-2">
+        <label
+          htmlFor="timeInput"
+          className="text-sm font-medium text-gray-700 whitespace-nowrap"
+        >
+          t {" "}
+        </label>
         <input
+          id="timeInput"
           type="number"
           value={time}
-          onChange={(e) => {
-            setTime(Number(e.target.value));
-          }}
-          className="mt-1 p-2 border border-gray-300"
-          style={{ flex: "1 1 auto" }} // Это позволит полю ввода заполнить оставшееся пространство
+          onChange={(e) => setTime(Number(e.target.value))}
+          className="flex-1 mt-1 p-2 border border-gray-300"
         />
       </div>
       <QuaternionProperties

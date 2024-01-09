@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ControlPanel from "./ControlPanel";
-//import QuaternionsPlot from "./QuaternionsPlot";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
 import GlobalScene from "./scene/GlobalScene";
 
@@ -30,17 +29,28 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
   const [localOrthographicCamera, setLocalOrthographicCamera] =
     useState(isOrthographicCamera);
 
+  const controlPanelRef = useRef<HTMLDivElement>(null);
+  const [controlPanelHeight, setControlPanelHeight] = useState(0);
+
+  useEffect(() => {
+    if (controlPanelRef.current) {
+      setControlPanelHeight(controlPanelRef.current.offsetHeight);
+    }
+  }, []);
+
   return (
-    <div className="border-2 border-gray-200 shadow rounded-lg overflow-hidden m-2">
-      <ControlPanel
-        isRunning={isRunning}
-        setIsRunning={setIsRunning}
-        coordinateSystem={localCoordinateSystem}
-        setCoordinateSystem={setLocalCoordinateSystem}
-        isOrthographicCamera={localOrthographicCamera}
-        setOrthographicCamera={setLocalOrthographicCamera}
-      />
-      <div>
+    <div className="border-2 border-gray-200 rounded-lg overflow-hidden h-full">
+      <div ref={controlPanelRef}>
+        <ControlPanel
+          isRunning={isRunning}
+          setIsRunning={setIsRunning}
+          coordinateSystem={localCoordinateSystem}
+          setCoordinateSystem={setLocalCoordinateSystem}
+          isOrthographicCamera={localOrthographicCamera}
+          setOrthographicCamera={setLocalOrthographicCamera}
+        />
+      </div>
+      <div style={{ height: `calc(100% - ${controlPanelHeight}px)` }}>
         <GlobalScene
           time={time}
           quaternion1={quaternion1}

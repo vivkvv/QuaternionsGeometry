@@ -10,7 +10,7 @@ interface GlobalSceneProps {
   coordinateSystem: number;
   isOrthographicCamera: boolean;
   perspectiveCamera: THREE.PerspectiveCamera;
-  orthographicCamera: THREE.OrthographicCamera;   
+  orthographicCamera: THREE.OrthographicCamera;
 }
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({
@@ -20,7 +20,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   coordinateSystem,
   isOrthographicCamera,
   perspectiveCamera,
-  orthographicCamera
+  orthographicCamera,
 }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef(time);
@@ -28,8 +28,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   const quaternion2Ref = useRef(quaternion2);
   const coordinateSystemRef = useRef(coordinateSystem);
   const isOrthographicCameraRef = useRef(isOrthographicCamera);
-  // const perspectiveCameraRef = useRef(perspectiveCamera);
-  // const orthographicCameraRef = useRef(orthographicCamera);
 
   useEffect(() => {
     timeRef.current = time;
@@ -37,65 +35,33 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     quaternion2Ref.current = quaternion2;
     coordinateSystemRef.current = coordinateSystem;
     isOrthographicCameraRef.current = isOrthographicCamera;
-  }, [time, quaternion1, quaternion2, coordinateSystem, isOrthographicCamera]); // Обновляем ссылки при изменении пропсов
+  }, [time, quaternion1, quaternion2, coordinateSystem, isOrthographicCamera]);
 
-  // function getDefaultOrthographicCameraParams(width: number, height: number) {
-  //   const aspectRatio = width / height;
-  //   const frustumSize = 5; // Это значение можно регулировать для управления "зумом"
+  function getDefaultOrthographicCameraParams(width: number, height: number) {
+    const aspectRatio = width / height;
+    const frustumSize = 5; // Это значение можно регулировать для управления "зумом"
 
-  //   return {
-  //     left: (-frustumSize * aspectRatio) / 2,
-  //     right: (frustumSize * aspectRatio) / 2,
-  //     top: frustumSize / 2,
-  //     bottom: -frustumSize / 2,
-  //     near: 0.1,
-  //     far: 100,
-  //   };
-  // }
+    return {
+      left: (-frustumSize * aspectRatio) / 2,
+      right: (frustumSize * aspectRatio) / 2,
+      top: frustumSize / 2,
+      bottom: -frustumSize / 2,
+      near: 0.1,
+      far: 100,
+    };
+  }
 
   useEffect(() => {
     if (!mountRef.current) return;
 
-    // const initializeCameras = (width: number, height: number) => {
-    //   const perspectiveCamera = new THREE.PerspectiveCamera(
-    //     45,
-    //     width / height,
-    //     0.1,
-    //     1000
-    //   );
-    //   perspectiveCamera.up.set(0, 0, 2);
-    //   perspectiveCamera.position.set(4, 1, 1);
-    //   perspectiveCamera.lookAt(new THREE.Vector3(0, 0, 0));
-
-    //   const orthoParams = getDefaultOrthographicCameraParams(width, height);
-    //   const orthographicCamera = new THREE.OrthographicCamera(
-    //     orthoParams.left,
-    //     orthoParams.right,
-    //     orthoParams.top,
-    //     orthoParams.bottom,
-    //     orthoParams.near,
-    //     orthoParams.far
-    //   );
-    //   orthographicCamera.up.set(0, 0, 2);
-    //   orthographicCamera.position.set(4, 1, 1);
-    //   orthographicCamera.lookAt(new THREE.Vector3(0, 0, 0));
-
-    //   return { perspectiveCamera, orthographicCamera };
-    // };
-
-    const width = window.innerWidth / 2.5;
-    const height = window.innerHeight / 2.5;// / 2.5;
-    // let { perspectiveCamera, orthographicCamera } = initializeCameras(
-    //   width,
-    //   height
-    // );
+    const width = mountRef.current.clientWidth;
+    const height = mountRef.current.clientHeight;
 
     const mount = mountRef.current;
     const scene = new THREE.Scene();
 
     let camera: THREE.Camera;
 
-    // Функция для обновления камеры
     const updateCamera = () => {
       if (isOrthographicCameraRef.current) {
         camera = orthographicCamera;
@@ -103,27 +69,22 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         camera = perspectiveCamera;
       }
       camera.lookAt(new THREE.Vector3(0, 0, 0));
-      //renderer.render(scene, camera);
     };
 
-    // Вызовите функцию обновления камеры, чтобы установить начальное состояние
     updateCamera();
 
-    // Функция для обработки изменения размера окна
-    /*
     const handleResize = () => {
-      //renderer.setSize(width, height);
-      //camera.updateProjectionMatrix();
+      if(!mountRef.current){
+        return;
+      }
 
-      const newWidth = window.innerWidth / 3;
-      const newHeight = window.innerHeight / 3;
+      const newWidth = mountRef.current.clientWidth;
+      const newHeight = mountRef.current.clientHeight;
       renderer.setSize(newWidth, newHeight);
 
-      // Обновление перспективной камеры
       perspectiveCamera.aspect = newWidth / newHeight;
       perspectiveCamera.updateProjectionMatrix();
 
-      // Обновление параметров ортогональной камеры при изменении размера окна
       const orthoParams = getDefaultOrthographicCameraParams(
         newWidth,
         newHeight
@@ -136,7 +97,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
 
       updateCamera();
     };
-    */
 
     const renderer = new THREE.WebGLRenderer({
       /*alpha: true, */ antialias: true,
@@ -232,10 +192,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
 
     animate();
 
-    //window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      //window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", handleResize);
       if (mount) {
         mount.removeChild(renderer.domElement);
       }
@@ -243,14 +203,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   }, [orthographicCamera, perspectiveCamera]);
 
   return (
-    // <div
-    //   style={{
-    //     border: "2px solid #00ff00", // зеленая рамка вокруг GlobalScene
-    //     padding: "10px",
-    //     margin: "5px",
-    //     boxSizing: "border-box",
-    //   }}
-    // >
     <div className="w-full h-full bg-black">
       <div ref={mountRef} className="w-full h-full" />
     </div>

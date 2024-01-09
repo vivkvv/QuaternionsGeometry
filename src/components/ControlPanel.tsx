@@ -20,7 +20,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setOrthographicCamera,
 }) => {
   return (
-    <div className="flex space-x-2.5 mb-4 bg-cyan-50 items-center">
+    <div className="flex items-center">
       {/* Кнопка Run с иконкой */}
       <button onClick={() => setIsRunning(!isRunning)}>
         {isRunning ? <FaPause /> : <FaPlay />}
@@ -36,7 +36,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
           type="checkbox"
           checked={isOrthographicCamera}
           onChange={(e) => setOrthographicCamera(e.target.checked)}
-          className="form-checkbox h-4 w-4"
+          className="form-checkbox h-4 w-4 mr-2"
         />
       </div>
 
