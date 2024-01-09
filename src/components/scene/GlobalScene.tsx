@@ -84,7 +84,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     // };
 
     const width = window.innerWidth / 2.5;
-    const height = window.innerHeight / 2.5;
+    const height = window.innerHeight / 2.5;// / 2.5;
     // let { perspectiveCamera, orthographicCamera } = initializeCameras(
     //   width,
     //   height

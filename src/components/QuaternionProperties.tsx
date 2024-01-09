@@ -13,21 +13,9 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
   setQuaternion, // Это функция для обновления кватерниона
 }) => {
   // ... состояние и обработчики ...
-  const [phi0, setPhi0] = useState(0); // Угол в градусах
-  const [nu, setNu] = useState(0); // Частота ν
-  const [n, setN] = useState({ n1: 0, n2: 0, n3: 0 });
-
-  // const handlePhi0Change = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setPhi0(parseFloat(event.target.value));
-  // };
-
-  // const handlePhi0Change = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const newPhi0 = parseFloat(event.target.value);
-  //   setQuaternion((prevQuaternion) => ({
-  //     ...prevQuaternion,
-  //     phi0: newPhi0,
-  //   }));
-  // };
+  const [phi0, setPhi0] = useState(quaternion.phi0); // Угол в градусах
+  const [nu, setNu] = useState(quaternion.nu); // Частота ν
+  const [n, setN] = useState(quaternion.n);
 
   const handlePhi0Change = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPhi0 = parseFloat(event.target.value);
@@ -39,10 +27,6 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
     setPhi0(newPhi0);
   };
 
-  // const handleNuChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setNu(parseFloat(event.target.value));
-  // };
-
   const handleNuChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newNu = parseFloat(event.target.value);
     const newQuaternion = {
@@ -52,15 +36,6 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
     setQuaternion(newQuaternion); // Устанавливаем новое состояние кватерниона
     setNu(newNu);
   };
-
-  // const handleDirectionVector =
-  //   (component: "n1" | "n2" | "n3") =>
-  //   (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     setN((prevN) => ({
-  //       ...prevN,
-  //       [component]: parseFloat(event.target.value),
-  //     }));
-  //   };
 
   const handleDirectionVector =
     (component: "n1" | "n2" | "n3") =>
@@ -176,8 +151,6 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
       <div>
         <p className="text-sm">
           {quaternionFormula}
-          {/* Q{index} = cos(φ₀ + ω * t) + (n<sub>x</sub> * i + n<sub>y</sub> * j +
-          n<sub>z</sub> * k) * sin(φ₀ + ω * t) / |n| */}
         </p>
       </div>
     </div>

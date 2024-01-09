@@ -11,7 +11,7 @@ interface PlotPanelProps {
   coordinateSystem: number;
   isOrthographicCamera: boolean;
   perspectiveCamera: THREE.PerspectiveCamera;
-  orthographicCamera: THREE.OrthographicCamera;  
+  orthographicCamera: THREE.OrthographicCamera;
 }
 
 const PlotPanel: React.FC<PlotPanelProps> = ({
@@ -21,25 +21,16 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
   coordinateSystem,
   isOrthographicCamera,
   perspectiveCamera,
-  orthographicCamera
+  orthographicCamera,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
 
-  const [localCoordinateSystem, setLocalCoordinateSystem] = useState(coordinateSystem);
-  const [localOrthographicCamera, setLocalOrthographicCamera] = useState(isOrthographicCamera);
-
+  const [localCoordinateSystem, setLocalCoordinateSystem] =
+    useState(coordinateSystem);
+  const [localOrthographicCamera, setLocalOrthographicCamera] =
+    useState(isOrthographicCamera);
 
   return (
-    // <div
-    //   style={{
-    //     flex: 1,
-    //     padding: "10px",
-    //     margin: "5px",
-    //     backgroundColor: "#aaaaaa",
-    //     border: "2 px solid #ff0000",
-    //     boxSizing: "border-box",
-    //   }}
-    // >
     <div className="border-2 border-gray-200 shadow rounded-lg overflow-hidden m-2">
       <ControlPanel
         isRunning={isRunning}
@@ -49,9 +40,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
         isOrthographicCamera={localOrthographicCamera}
         setOrthographicCamera={setLocalOrthographicCamera}
       />
-      {/* Здесь будет отображаться графика */}
       <div>
-        {/* <QuaternionsPlot */}
         <GlobalScene
           time={time}
           quaternion1={quaternion1}

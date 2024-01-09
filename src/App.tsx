@@ -1,39 +1,21 @@
-import React, { useEffect, useState } from "react";
-//import logo from './logo.svg';
+import React, { useState } from "react";
 import "./App.css";
 import QuaternionPanel from "./components/QuaternionPanel";
-// import PlotPanel from "./components/PlotPanel";
 import PlotsManager from "./components/PlotsManager";
 
 const App = () => {
   const [time, setTime] = useState(0);
   const [quaternion1, setQuaternion1] = useState({
-    phi0: 0,
-    nu: 0,
-    n: { n1: 0, n2: 0, n3: 0 },
+    phi0: 45,
+    nu: 0.017,
+    n: { n1: 1, n2: 2, n3: 3 },
   });
   const [quaternion2, setQuaternion2] = useState({
-    phi0: 0,
-    nu: 0,
-    n: { n1: 0, n2: 0, n3: 0 },
+    phi0: 60,
+    nu: 0.02,
+    n: { n1: -1, n2: 1, n3: 1 },
   });
-  //const [coordinateSystem, setCoordinateSystem] = useState(0);
-  //const [isOrthographicCamera, setOrthographicCamera] = useState(false);
-
-  // Логирование при изменении time
-  useEffect(() => {
-    console.log("Time updated:", time);
-  }, [time]);
-
-  // Логирование при изменении quaternion1
-  useEffect(() => {
-    console.log("Quaternion1 updated:", quaternion1);
-  }, [quaternion1]);
-
-  // Логирование при изменении quaternion2
-  useEffect(() => {
-    console.log("Quaternion2 updated:", quaternion2);
-  }, [quaternion2]);
+  
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -49,10 +31,6 @@ const App = () => {
         time={time}
         quaternion1={quaternion1}
         quaternion2={quaternion2}
-        //coordinateSystem={coordinateSystem}
-        //setCoordinateSystem={setCoordinateSystem}
-        //isOrthographicCamera={isOrthographicCamera}
-        //setOrthographicCamera={setOrthographicCamera}
       />
     </div>
   );

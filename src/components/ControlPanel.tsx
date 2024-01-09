@@ -20,14 +20,14 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setOrthographicCamera,
 }) => {
   return (
-    <div className="flex space-x-2.5 mb-4 bg-cyan-50">
+    <div className="flex space-x-2.5 mb-4 bg-cyan-50 items-center">
       {/* Кнопка Run с иконкой */}
       <button onClick={() => setIsRunning(!isRunning)}>
         {isRunning ? <FaPause /> : <FaPlay />}
       </button>
 
       {/* Чекбокс для типа камеры */}
-      <div className="flex items-center mb-4">
+      <div className="flex items-center">
         <label htmlFor="cameraType" className="text-xs mr-2">
           Orthographic Camera:
         </label>
