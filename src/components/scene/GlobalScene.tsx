@@ -78,7 +78,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!mountRef.current) return;
+    if (!mountRef.current){
+      return;
+    }
 
     const width = mountRef.current.clientWidth;
     const height = mountRef.current.clientHeight;
@@ -100,7 +102,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     updateCamera();
 
     const handleResize = () => {
-      if(!mountRef.current){
+      if (!mountRef.current) {
         return;
       }
 
@@ -129,11 +131,17 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     });
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
-        
-    const orthographicControl = new OrbitControls(orthographicCamera, renderer.domElement);
+
+    const orthographicControl = new OrbitControls(
+      orthographicCamera,
+      renderer.domElement
+    );
     orthographicControl.enablePan = false;
-    
-    const perspectiveControl = new OrbitControls(perspectiveCamera, renderer.domElement);
+
+    const perspectiveControl = new OrbitControls(
+      perspectiveCamera,
+      renderer.domElement
+    );
     perspectiveControl.enablePan = false;
 
     mount.appendChild(renderer.domElement);
@@ -143,6 +151,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
 
     const animate = () => {
       updateCamera();
+
+      orthographicControl.update();
+      perspectiveControl.update();
 
       requestAnimationFrame(animate);
 
@@ -155,7 +166,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         timeRef.current,
         quaternion1Ref.current,
         quaternion1Ref.current.color
-        //0x00ff00
       );
 
       const quaternionRight = localSystem.updateQuaternionLine(
@@ -163,7 +173,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         timeRef.current,
         quaternion2Ref.current,
         quaternion2Ref.current.color
-        //0x0000ff
       );
 
       const quaternionResult = new THREE.Quaternion().multiplyQuaternions(
@@ -171,7 +180,11 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         quaternionRight
       );
 
-      localSystem.updateThreeQuaternionLine("3", quaternionResult, new THREE.Color('rgb(255, 0, 0)'));
+      localSystem.updateThreeQuaternionLine(
+        "3",
+        quaternionResult,
+        new THREE.Color("rgb(255, 0, 0)")
+      );
 
       // расстояние от точки первого кватерниона до оси второго
       const r1Axe2 = localSystem.getDistanceFromPointToAxe(
@@ -182,6 +195,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
           quaternionRight.z
         )
       );
+
       localSystem.createOrUpdateCylinder(
         "4",
         new THREE.Vector3(
@@ -190,8 +204,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
           quaternionRight.z
         ),
         r1Axe2,
-        quaternion2Ref.current.color, //0x0000ff,
-        //0.25
+        quaternion2Ref.current.color
       );
 
       // расстояние от точки второго кватерниона до оси первого
@@ -203,12 +216,12 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         ),
         new THREE.Vector3(quaternionLeft.x, quaternionLeft.y, quaternionLeft.z)
       );
+
       localSystem.createOrUpdateCylinder(
         "5",
         new THREE.Vector3(quaternionLeft.x, quaternionLeft.y, quaternionLeft.z),
         r2Axe1,
-        quaternion1Ref.current.color, //0x00ff00,
-        //0.25
+        quaternion1Ref.current.color
       );
 
       if (coordinateSystemRef.current === 0) {
