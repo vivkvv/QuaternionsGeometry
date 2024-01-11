@@ -1,7 +1,8 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import LocalCoordinateSystem from "./LocalCoordinateSystem";
 import { TrigonometricalQuaternion } from "../../TrigonometricalQuaternion";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 interface GlobalSceneProps {
   time: number;
@@ -9,8 +10,6 @@ interface GlobalSceneProps {
   quaternion2: TrigonometricalQuaternion;
   coordinateSystem: number;
   isOrthographicCamera: boolean;
-  perspectiveCamera: THREE.PerspectiveCamera;
-  orthographicCamera: THREE.OrthographicCamera;
 }
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({
@@ -19,8 +18,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   quaternion2,
   coordinateSystem,
   isOrthographicCamera,
-  perspectiveCamera,
-  orthographicCamera,
 }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef(time);
@@ -39,7 +36,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
 
   function getDefaultOrthographicCameraParams(width: number, height: number) {
     const aspectRatio = width / height;
-    const frustumSize = 5; // Это значение можно регулировать для управления "зумом"
+    const frustumSize = 5;
 
     return {
       left: (-frustumSize * aspectRatio) / 2,
@@ -51,6 +48,35 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     };
   }
 
+  const perspectiveCamera = useMemo(() => {
+    const cam = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      1000
+    );
+    cam.position.set(4, 1, 1);
+    cam.up.set(0, 0, 1);
+    return cam;
+  }, []);
+
+  const orthographicCamera = useMemo(() => {
+    const aspect = window.innerWidth / window.innerHeight;
+    const frustumSize = 5;
+
+    const cam = new THREE.OrthographicCamera(
+      (frustumSize * aspect) / -2,
+      (frustumSize * aspect) / 2,
+      frustumSize / 2,
+      frustumSize / -2,
+      0.1,
+      1000
+    );
+    cam.position.set(2, 1, 1);
+    cam.up.set(0, 0, 1);
+    return cam;
+  }, []);
+
   useEffect(() => {
     if (!mountRef.current) return;
 
@@ -60,7 +86,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     const mount = mountRef.current;
     const scene = new THREE.Scene();
 
-    let camera: THREE.Camera;
+    let camera = new THREE.Camera();
 
     const updateCamera = () => {
       if (isOrthographicCameraRef.current) {
@@ -103,6 +129,13 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     });
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
+        
+    const orthographicControl = new OrbitControls(orthographicCamera, renderer.domElement);
+    orthographicControl.enablePan = false;
+    
+    const perspectiveControl = new OrbitControls(perspectiveCamera, renderer.domElement);
+    perspectiveControl.enablePan = false;
+
     mount.appendChild(renderer.domElement);
 
     const localSystem = new LocalCoordinateSystem();
@@ -155,8 +188,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
           quaternionRight.z
         ),
         r1Axe2,
-        0x0000ff,
-        0.25
+        quaternion2Ref.current.color, //0x0000ff,
+        //0.25
       );
 
       // расстояние от точки второго кватерниона до оси первого
@@ -172,13 +205,13 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         "5",
         new THREE.Vector3(quaternionLeft.x, quaternionLeft.y, quaternionLeft.z),
         r2Axe1,
-        0x00ff00,
-        0.25
+        quaternion1Ref.current.color, //0x00ff00,
+        //0.25
       );
 
       if (coordinateSystemRef.current === 0) {
-        camera.position.set(4, 1, 1);
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
+        // camera.position.set(4, 1, 1);
+        // camera.lookAt(new THREE.Vector3(0, 0, 0));
       } else if (coordinateSystemRef.current === 1) {
         localSystem.adjustCamera(camera, quaternionLeft);
       } else if (coordinateSystemRef.current === 2) {

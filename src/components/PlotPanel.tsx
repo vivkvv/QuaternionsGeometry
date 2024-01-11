@@ -9,8 +9,6 @@ interface PlotPanelProps {
   quaternion2: TrigonometricalQuaternion;
   coordinateSystem: number;
   isOrthographicCamera: boolean;
-  perspectiveCamera: THREE.PerspectiveCamera;
-  orthographicCamera: THREE.OrthographicCamera;
 }
 
 const PlotPanel: React.FC<PlotPanelProps> = ({
@@ -19,8 +17,6 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
   quaternion2,
   coordinateSystem,
   isOrthographicCamera,
-  perspectiveCamera,
-  orthographicCamera,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
 
@@ -57,8 +53,6 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           quaternion2={quaternion2}
           coordinateSystem={localCoordinateSystem}
           isOrthographicCamera={localOrthographicCamera}
-          perspectiveCamera={perspectiveCamera}
-          orthographicCamera={orthographicCamera}
         />
       </div>
     </div>

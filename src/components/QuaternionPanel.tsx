@@ -23,12 +23,20 @@ const QuaternionPanel: React.FC<QuaternionPanelProps> = ({
 }) => {
   return (
     <div style={{ width: "25%", padding: "10px", backgroundColor: "#f0f0f0" }}>
+      <div className="font-bold text-lg">
+        <p>
+          Q = cos(&phi;<sub>0</sub> + 2&pi;&nu;t) + (i&middot;cos&alpha; +
+          j&middot;cos&beta; + k&middot;cos(&gamma;)) &middot; sin(&phi;
+          <sub>0</sub> + 2&pi;&nu;t)
+        </p>
+      </div>
+      <hr className="my-4" />
       <div className="flex items-center mb-4 space-x-2">
         <label
           htmlFor="timeInput"
           className="text-sm font-medium text-gray-700 whitespace-nowrap"
         >
-          t {" "}
+          t{" "}
         </label>
         <input
           id="timeInput"
@@ -38,6 +46,7 @@ const QuaternionPanel: React.FC<QuaternionPanelProps> = ({
           className="flex-1 mt-1 p-2 border border-gray-300"
         />
       </div>
+      <hr className="my-4" />
       <QuaternionProperties
         index={1}
         quaternion={quaternion1}
@@ -49,6 +58,7 @@ const QuaternionPanel: React.FC<QuaternionPanelProps> = ({
         quaternion={quaternion2}
         setQuaternion={setQuaternion2}
       />
+      <hr className="my-4" />
     </div>
   );
 };

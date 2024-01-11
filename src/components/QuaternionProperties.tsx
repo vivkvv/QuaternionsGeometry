@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
+import SketchExample from "./SketchPicker";
 
 interface QuaternionPropertiesProps {
   index: number; // Добавляем пропс для индекса
@@ -16,6 +17,17 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
   const [phi0, setPhi0] = useState(quaternion.phi0); // Угол в градусах
   const [nu, setNu] = useState(quaternion.nu); // Частота ν
   const [n, setN] = useState(quaternion.n);
+  const [color, setColor] = useState(quaternion.color);
+
+  const handleColorChange = (color: any) => {
+    //const newColor = color; //`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`;
+    const newQuaternion = {
+      ...quaternion,
+      color: color, // Обновляем цвет в кватернионе
+    };
+    setQuaternion(newQuaternion); // Устанавливаем новое состояние кватерниона
+    setColor(color);
+  };
 
   const handlePhi0Change = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPhi0 = parseFloat(event.target.value);
@@ -49,10 +61,10 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
         },
       };
       setQuaternion(newQuaternion); // Устанавливаем новое состояние кватерниона
-     setN((prevN) => ({
+      setN((prevN) => ({
         ...prevN,
         [component]: newValue,
-      }));      
+      }));
     };
 
   const magnitude = useMemo(() => {
@@ -92,8 +104,22 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
   }, [index, magnitude, n, trigonometricPart]);
 
   return (
-    <div className="flex flex-col p-4 bg-gray-100">
-      <div className="flex justify-between items-center gap-x-2 mb-4">
+    <div className="flex flex-col bg-gray-100">
+      <div className="flex justify-between items-center gap-x-2">
+        <div className="flex flex-col items-center w-full">
+          <SketchExample
+            initialColor={{
+              r: color.r,
+              g: color.g,
+              b: color.b,
+              a: color.a,
+            }}
+            onChange={handleColorChange}
+          />
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center gap-x-2">
         <div className="flex flex-col items-center w-full">
           <label className="text-sm font-medium text-gray-700">φ₀°</label>
           <input
@@ -149,9 +175,7 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
         </div>
       </div>
       <div>
-        <p className="text-sm">
-          {quaternionFormula}
-        </p>
+        <p className="text-sm">{quaternionFormula}</p>
       </div>
     </div>
   );

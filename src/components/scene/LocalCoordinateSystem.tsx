@@ -26,15 +26,13 @@ class LocalCoordinateSystem extends THREE.Object3D {
     );
 
     let normalizedDirection = directionVector.clone().normalize();
-    // normalizedDirection.x = Math.abs(normalizedDirection.x);
-    // normalizedDirection.y = Math.abs(normalizedDirection.y);
     if(normalizedDirection.z < 0) {
       normalizedDirection.x = - normalizedDirection.x;
       normalizedDirection.y = - normalizedDirection.y;            
       normalizedDirection.z = - normalizedDirection.z;
     }
-    // Выбираем расстояние для камеры, например, 2.5 единиц
-    const distance = 5;
+
+    const distance = camera.position.length();
     // Вычисляем позицию камеры как точку на противоположной стороне единичного шара
     const cameraPosition = normalizedDirection.multiplyScalar(-distance);
     // Устанавливаем позицию камеры
@@ -97,27 +95,33 @@ class LocalCoordinateSystem extends THREE.Object3D {
     id: string,
     target: THREE.Vector3,
     radius: number,
-    color: number,
-    opacity: number
+    rgbaColor: any 
   ): void {
     const origin = new THREE.Vector3(0, 0, 0);
     const direction = new THREE.Vector3()
       .subVectors(target, origin)
       .normalize();
-    // const distanceToTarget = target.length(); // Расстояние до целевой точки
-    const length = 5; // Math.min(distanceToTarget * 2, 2); // Ограничиваем длину
+
+    const length = 5;
 
     let cylinder = this.getObjectByName(
       `quaternionCylinder-${id}`
     ) as THREE.Mesh;
 
+    let ring = this.getObjectByName(`quaternionRing-${id}`) as THREE.Mesh;
+
+    const color = new THREE.Color(
+      `rgb(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b})`
+    );
+    const opacity: number = rgbaColor.a;      
+
     if (cylinder) {
-      // Если цилиндр существует, обновляем его материал и геометрию
-      if (cylinder && cylinder.material instanceof THREE.MeshBasicMaterial) {
+      if (cylinder.material instanceof THREE.MeshBasicMaterial) {
         cylinder.material.color.set(color);
         cylinder.material.opacity = opacity;
       }
-      cylinder.geometry.dispose(); // Удаляем старую геометрию
+      cylinder.geometry.dispose();
+      
       cylinder.geometry = new THREE.CylinderGeometry(
         radius,
         radius,
@@ -125,7 +129,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
         16,
         1,
         //true
-      ); // Создаем новую геометрию
+      );
     } else {
       // Создание нового цилиндра
       const geometry = new THREE.CylinderGeometry(radius, radius, length, 16, 1, /*true*/);
