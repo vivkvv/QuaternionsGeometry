@@ -32,6 +32,10 @@ class LocalCoordinateSystem extends THREE.Object3D {
       normalizedDirection.z = -normalizedDirection.z;
     }
 
+    if(normalizedDirection.x === 0 && normalizedDirection.y === 0 && normalizedDirection.z === 0){
+      return;
+    }
+
     const distance = camera.position.length();
     // Вычисляем позицию камеры как точку на противоположной стороне единичного шара
     const cameraPosition = normalizedDirection.multiplyScalar(-distance);
@@ -98,6 +102,11 @@ class LocalCoordinateSystem extends THREE.Object3D {
     rgbaColor: any
   ): void {
     const origin = new THREE.Vector3(0, 0, 0);
+
+    if(target.equals(origin)){
+      return;
+    }
+
     const direction = new THREE.Vector3()
       .subVectors(target, origin)
       .normalize();
