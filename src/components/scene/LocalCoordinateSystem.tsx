@@ -26,10 +26,10 @@ class LocalCoordinateSystem extends THREE.Object3D {
     );
 
     let normalizedDirection = directionVector.clone().normalize();
-    if(normalizedDirection.z < 0) {
-      normalizedDirection.x = - normalizedDirection.x;
-      normalizedDirection.y = - normalizedDirection.y;            
-      normalizedDirection.z = - normalizedDirection.z;
+    if (normalizedDirection.z < 0) {
+      normalizedDirection.x = -normalizedDirection.x;
+      normalizedDirection.y = -normalizedDirection.y;
+      normalizedDirection.z = -normalizedDirection.z;
     }
 
     const distance = camera.position.length();
@@ -95,7 +95,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
     id: string,
     target: THREE.Vector3,
     radius: number,
-    rgbaColor: any 
+    rgbaColor: any
   ): void {
     const origin = new THREE.Vector3(0, 0, 0);
     const direction = new THREE.Vector3()
@@ -108,12 +108,13 @@ class LocalCoordinateSystem extends THREE.Object3D {
       `quaternionCylinder-${id}`
     ) as THREE.Mesh;
 
-    let ring = this.getObjectByName(`quaternionRing-${id}`) as THREE.Mesh;
+    let ring1 = this.getObjectByName(`quaternionRing1-${id}`) as THREE.Mesh;
+    let ring2 = this.getObjectByName(`quaternionRing2-${id}`) as THREE.Mesh;
 
     const color = new THREE.Color(
       `rgb(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b})`
     );
-    const opacity: number = rgbaColor.a;      
+    const opacity: number = rgbaColor.a;
 
     if (cylinder) {
       if (cylinder.material instanceof THREE.MeshBasicMaterial) {
@@ -121,29 +122,69 @@ class LocalCoordinateSystem extends THREE.Object3D {
         cylinder.material.opacity = opacity;
       }
       cylinder.geometry.dispose();
-      
       cylinder.geometry = new THREE.CylinderGeometry(
         radius,
         radius,
         length,
         16,
         1,
-        //true
+        true
       );
+
+      if (ring1) {
+        if (ring1.material instanceof THREE.MeshBasicMaterial) {
+          ring1.material.color.set(color); //"rgb(255, 255, 0)");
+        }
+        ring1.geometry.dispose();
+        ring1.geometry = new THREE.RingGeometry(0.95 * radius, 1.05 * radius);
+      }
+
+      if (ring2) {
+        if (ring2.material instanceof THREE.MeshBasicMaterial) {
+          ring2.material.color.set(color); //"rgb(255, 255, 0)");
+        }
+        ring2.geometry.dispose();
+        ring2.geometry = new THREE.RingGeometry(0.95 * radius, 1.05 * radius);
+      }
     } else {
       // Создание нового цилиндра
-      const geometry = new THREE.CylinderGeometry(radius, radius, length, 16, 1, /*true*/);
-      const material = new THREE.MeshBasicMaterial({
+      const cylinderGeometry = new THREE.CylinderGeometry(
+        radius,
+        radius,
+        length,
+        16,
+        1,
+        true
+      );
+      const cylinderMaterial = new THREE.MeshBasicMaterial({
         color: color, // Цвет цилиндра
         transparent: true, // Включаем прозрачность
         opacity: opacity, // Задаем полупрозрачность
         // wireframe: true,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
       });
 
-      cylinder = new THREE.Mesh(geometry, material);
+      cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
       cylinder.name = `quaternionCylinder-${id}`;
       this.add(cylinder);
+
+      // Создаем также кольцо посеpедине цилиндра
+      const ringGeometry = new THREE.RingGeometry(0.95 * radius, 1.05 * radius);
+      const ringMaterial = new THREE.MeshBasicMaterial({
+        color: new THREE.Color(color), //"rgb(255, 255, 0)"), //color, // Цвет цилиндра
+        transparent: false, // Включаем прозрачность
+        //opacity: opacity, // Задаем полупрозрачность
+        // wireframe: true,
+        side: THREE.DoubleSide,
+      });
+
+      ring1 = new THREE.Mesh(ringGeometry, ringMaterial);
+      ring1.name = `quaternionRing1-${id}`;
+      this.add(ring1);
+
+      ring2 = new THREE.Mesh(ringGeometry, ringMaterial);
+      ring2.name = `quaternionRing2-${id}`;
+      this.add(ring2);
     }
 
     // Настройка позиции и ориентации
@@ -153,16 +194,39 @@ class LocalCoordinateSystem extends THREE.Object3D {
       direction
     );
     cylinder.quaternion.copy(quaternion);
-    //cylinder.setRotationFromQuaternion(quaternion);
 
     // Центрируем цилиндр между началом координат и целевой точкой
     cylinder.position.copy(origin).add(target).multiplyScalar(0.5);
+
+    // the same for the ring
+    const additionalRotation = new THREE.Quaternion().setFromAxisAngle(
+      new THREE.Vector3(1, 0, 0),
+      Math.PI / 2
+    );
+    const ringQuaternion = new THREE.Quaternion().multiplyQuaternions(
+      quaternion,
+      additionalRotation
+    );
+    ring1.quaternion.copy(ringQuaternion);
+    //ring.position.copy(cylinder.position);
+    const endPosition = new THREE.Vector3()
+      .copy(direction)
+      .multiplyScalar(length / 2) // Смещение на половину длины цилиндра
+      .add(cylinder.position);
+    ring1.position.copy(endPosition);
+
+    ring2.quaternion.copy(ringQuaternion);
+    const beginPosition = new THREE.Vector3()
+      .copy(direction)
+      .multiplyScalar(-length / 2) // Смещение на половину длины цилиндра
+      .add(cylinder.position);
+    ring2.position.copy(beginPosition);
   }
 
   updateThreeQuaternionLine(
     id: string,
     threeQuaternion: THREE.Quaternion,
-    color: number
+    color: THREE.Color
   ) {
     const object = this.getObjectByName(`quaternionLine-${id}`);
     const line = object as THREE.Line;
@@ -215,6 +279,9 @@ class LocalCoordinateSystem extends THREE.Object3D {
       this.add(sphere);
     } else {
       line.geometry.setFromPoints(points);
+      if (line.material instanceof THREE.LineBasicMaterial) {
+        line.material.color.set(color);
+      }
       line.geometry.attributes.position.needsUpdate = true;
 
       // Находим и обновляем сферу
@@ -227,6 +294,11 @@ class LocalCoordinateSystem extends THREE.Object3D {
           threeQuaternion.y,
           threeQuaternion.z
         ); // Обновляем позицию сферы
+
+        if(sphere.material instanceof THREE.MeshBasicMaterial){
+          sphere.material.color.set(color);  
+        }
+
       }
     }
   }
@@ -235,11 +307,14 @@ class LocalCoordinateSystem extends THREE.Object3D {
     id: string,
     time: number,
     quaternion: TrigonometricalQuaternion,
-    color: number
+    rgbaColor: any
   ): THREE.Quaternion {
     const threeQuaternion =
       this.getThreeQuaternionFromTrigonometricalQuaternion(time, quaternion);
 
+    const color = new THREE.Color(
+      `rgb(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b})`
+    );
     this.updateThreeQuaternionLine(id, threeQuaternion, color);
 
     return threeQuaternion;

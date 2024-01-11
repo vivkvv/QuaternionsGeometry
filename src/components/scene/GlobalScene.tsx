@@ -154,14 +154,16 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         "1",
         timeRef.current,
         quaternion1Ref.current,
-        0x00ff00
+        quaternion1Ref.current.color
+        //0x00ff00
       );
 
       const quaternionRight = localSystem.updateQuaternionLine(
         "2",
         timeRef.current,
         quaternion2Ref.current,
-        0x0000ff
+        quaternion2Ref.current.color
+        //0x0000ff
       );
 
       const quaternionResult = new THREE.Quaternion().multiplyQuaternions(
@@ -169,7 +171,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         quaternionRight
       );
 
-      localSystem.updateThreeQuaternionLine("3", quaternionResult, 0xff0000);
+      localSystem.updateThreeQuaternionLine("3", quaternionResult, new THREE.Color('rgb(255, 0, 0)'));
 
       // расстояние от точки первого кватерниона до оси второго
       const r1Axe2 = localSystem.getDistanceFromPointToAxe(
