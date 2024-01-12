@@ -2,15 +2,28 @@
 import * as THREE from "three";
 // import QuaternionProperties from "../QuaternionProperties";
 import { TrigonometricalQuaternion } from "../../TrigonometricalQuaternion";
+import { kdTree } from "kd-tree-javascript";
 // import { OperationCanceledException } from "typescript";
 
+const distance = (a: any, b: any) => {
+  const result =
+    Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2) + Math.pow(a.z - b.z, 2);
+
+  return result;
+};
+
 class LocalCoordinateSystem extends THREE.Object3D {
+  tree: any;
   constructor() {
     super();
+
+    this.tree = new kdTree([], distance, ["x", "y", "z"]);
 
     // const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // цвет и интенсивность
     // directionalLight.position.set(5, 5, 5); // позиция источника света
     // this.add(directionalLight);
+
+    this.createShere();
 
     // Здесь можно добавить оси, сетку и другие элементы
     this.createAxis(new THREE.Vector3(1, 0, 0), "white", "X");
@@ -32,7 +45,11 @@ class LocalCoordinateSystem extends THREE.Object3D {
       normalizedDirection.z = -normalizedDirection.z;
     }
 
-    if(normalizedDirection.x === 0 && normalizedDirection.y === 0 && normalizedDirection.z === 0){
+    if (
+      normalizedDirection.x === 0 &&
+      normalizedDirection.y === 0 &&
+      normalizedDirection.z === 0
+    ) {
       return;
     }
 
@@ -103,7 +120,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
   ): void {
     const origin = new THREE.Vector3(0, 0, 0);
 
-    if(target.equals(origin)){
+    if (target.equals(origin)) {
       return;
     }
 
@@ -235,7 +252,8 @@ class LocalCoordinateSystem extends THREE.Object3D {
   updateThreeQuaternionLine(
     id: string,
     threeQuaternion: THREE.Quaternion,
-    color: THREE.Color
+    color: THREE.Color,
+    markPosition: boolean = false
   ) {
     const object = this.getObjectByName(`quaternionLine-${id}`);
     const line = object as THREE.Line;
@@ -304,10 +322,36 @@ class LocalCoordinateSystem extends THREE.Object3D {
           threeQuaternion.z
         ); // Обновляем позицию сферы
 
-        if(sphere.material instanceof THREE.MeshBasicMaterial){
-          sphere.material.color.set(color);  
+        if (sphere.material instanceof THREE.MeshBasicMaterial) {
+          sphere.material.color.set(color);
         }
+      }
+    }
 
+    if (markPosition) {
+      const nearstPoint = this.tree.nearest(
+        { x: threeQuaternion.x, y: threeQuaternion.y, z: threeQuaternion.z },
+        1,
+        0.001
+      );
+
+      if (nearstPoint.length === 0) {
+        this.tree.insert({
+          x: threeQuaternion.x,
+          y: threeQuaternion.y,
+          z: threeQuaternion.z,
+        });
+
+        const sphereGeometry = new THREE.SphereGeometry(0.02, 32, 32);
+        const sphereMaterial = new THREE.MeshBasicMaterial({ color: "white" });
+        const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        sphere.name = `mark`;
+        sphere.position.set(
+          threeQuaternion.x,
+          threeQuaternion.y,
+          threeQuaternion.z
+        );
+        this.add(sphere);
       }
     }
   }
@@ -327,6 +371,19 @@ class LocalCoordinateSystem extends THREE.Object3D {
     this.updateThreeQuaternionLine(id, threeQuaternion, color);
 
     return threeQuaternion;
+  }
+
+  createShere() {
+    // const sphere = new THREE.Mesh(
+    //   new THREE.SphereGeometry(1),
+    //   new THREE.MeshBasicMaterial({
+    //     color: "white",
+    //     opacity: 0.01,
+    //     transparent: true,
+    //     side: THREE.DoubleSide
+    //   })
+    // );
+    // this.add(sphere);
   }
 
   createAxis(direction: THREE.Vector3, color: string, label: string): void {

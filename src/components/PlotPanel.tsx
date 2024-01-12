@@ -24,6 +24,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
     useState(coordinateSystem);
   const [localOrthographicCamera, setLocalOrthographicCamera] =
     useState(isOrthographicCamera);
+  const [localSetTrace, setLocalSetTrace] = useState(false);
 
   const controlPanelRef = useRef<HTMLDivElement>(null);
   const [controlPanelHeight, setControlPanelHeight] = useState(0);
@@ -44,6 +45,8 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           setCoordinateSystem={setLocalCoordinateSystem}
           isOrthographicCamera={localOrthographicCamera}
           setOrthographicCamera={setLocalOrthographicCamera}
+          isSetTrace={localSetTrace}
+          setIsSetTrace={setLocalSetTrace}
         />
       </div>
       <div style={{ height: `calc(100% - ${controlPanelHeight}px)` }}>
@@ -53,6 +56,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           quaternion2={quaternion2}
           coordinateSystem={localCoordinateSystem}
           isOrthographicCamera={localOrthographicCamera}
+          isSetTrace={localSetTrace}
         />
       </div>
     </div>

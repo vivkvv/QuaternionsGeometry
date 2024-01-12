@@ -9,6 +9,8 @@ interface ControlPanelProps {
   setCoordinateSystem: (num: number) => void;
   isOrthographicCamera: boolean;
   setOrthographicCamera: (orthographicCamera: boolean) => void;
+  isSetTrace: boolean;
+  setIsSetTrace: (setTrace: boolean) => void;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -18,6 +20,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setCoordinateSystem,
   isOrthographicCamera,
   setOrthographicCamera,
+  isSetTrace,
+  setIsSetTrace,
 }) => {
   return (
     <div className="flex items-center">
@@ -25,6 +29,19 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       <button onClick={() => setIsRunning(!isRunning)}>
         {isRunning ? <FaPause /> : <FaPlay />}
       </button> */}
+
+      <div className="flex items-center">
+        <label htmlFor="mark" className="text-xs mr-2">
+          Mark:
+        </label>
+        <input
+          id="mark"
+          type="checkbox"
+          checked={isSetTrace}
+          onChange={(e) => setIsSetTrace(e.target.checked)}
+          className="form-checkbox h-4 w-4 mr-2"
+        />
+      </div>
 
       {/* Чекбокс для типа камеры */}
       <div className="flex items-center">

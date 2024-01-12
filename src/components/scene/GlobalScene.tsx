@@ -10,6 +10,7 @@ interface GlobalSceneProps {
   quaternion2: TrigonometricalQuaternion;
   coordinateSystem: number;
   isOrthographicCamera: boolean;
+  isSetTrace: boolean;
 }
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({
@@ -18,6 +19,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   quaternion2,
   coordinateSystem,
   isOrthographicCamera,
+  isSetTrace
 }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef(time);
@@ -25,29 +27,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   const quaternion2Ref = useRef(quaternion2);
   const coordinateSystemRef = useRef(coordinateSystem);
   const isOrthographicCameraRef = useRef(isOrthographicCamera);
+  const isSetTraceRef = useRef(isSetTrace);
 
-  useEffect(() => {
-    timeRef.current = time;
-    quaternion1Ref.current = quaternion1;
-    quaternion2Ref.current = quaternion2;
-    coordinateSystemRef.current = coordinateSystem;
-    isOrthographicCameraRef.current = isOrthographicCamera;
-  }, [time, quaternion1, quaternion2, coordinateSystem, isOrthographicCamera]);
-
-  function getDefaultOrthographicCameraParams(width: number, height: number) {
-    const aspectRatio = width / height;
-    const frustumSize = 5;
-
-    return {
-      left: (-frustumSize * aspectRatio) / 2,
-      right: (frustumSize * aspectRatio) / 2,
-      top: frustumSize / 2,
-      bottom: -frustumSize / 2,
-      near: 0.1,
-      far: 100,
-    };
-  }
-
+  const cameraRef = useRef(new THREE.Camera());
   const perspectiveCamera = useMemo(() => {
     const cam = new THREE.PerspectiveCamera(
       45,
@@ -78,7 +60,52 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   }, []);
 
   useEffect(() => {
-    if (!mountRef.current){
+    isSetTraceRef.current = isSetTrace;
+  }, [isSetTrace]);
+
+  useEffect(() => {
+    timeRef.current = time;
+  }, [time]);
+
+  useEffect(() => {
+    quaternion1Ref.current = quaternion1;
+  }, [quaternion1]);
+
+  useEffect(() => {
+    quaternion2Ref.current = quaternion2;
+  }, [quaternion2]);
+
+  useEffect(() => {
+    coordinateSystemRef.current = coordinateSystem;
+  }, [coordinateSystem]);
+
+  useEffect(() => {
+    isOrthographicCameraRef.current = isOrthographicCamera;
+
+    if (isOrthographicCameraRef.current) {
+      cameraRef.current = orthographicCamera;
+    } else {
+      cameraRef.current = perspectiveCamera;
+    }
+    cameraRef.current.lookAt(new THREE.Vector3(0, 0, 0));
+  }, [isOrthographicCamera, perspectiveCamera, orthographicCamera]);
+
+  function getDefaultOrthographicCameraParams(width: number, height: number) {
+    const aspectRatio = width / height;
+    const frustumSize = 5;
+
+    return {
+      left: (-frustumSize * aspectRatio) / 2,
+      right: (frustumSize * aspectRatio) / 2,
+      top: frustumSize / 2,
+      bottom: -frustumSize / 2,
+      near: 0.1,
+      far: 100,
+    };
+  }
+
+  useEffect(() => {
+    if (!mountRef.current) {
       return;
     }
 
@@ -87,19 +114,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
 
     const mount = mountRef.current;
     const scene = new THREE.Scene();
-
-    let camera = new THREE.Camera();
-
-    const updateCamera = () => {
-      if (isOrthographicCameraRef.current) {
-        camera = orthographicCamera;
-      } else {
-        camera = perspectiveCamera;
-      }
-      camera.lookAt(new THREE.Vector3(0, 0, 0));
-    };
-
-    updateCamera();
 
     const handleResize = () => {
       if (!mountRef.current) {
@@ -122,8 +136,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
       orthographicCamera.top = orthoParams.top;
       orthographicCamera.bottom = orthoParams.bottom;
       orthographicCamera.updateProjectionMatrix();
-
-      updateCamera();
     };
 
     const renderer = new THREE.WebGLRenderer({
@@ -150,16 +162,14 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     scene.add(localSystem);
 
     const animate = () => {
-      updateCamera();
-
       orthographicControl.update();
       perspectiveControl.update();
 
       requestAnimationFrame(animate);
 
-      localSystem.updateSpriteScaleForLabel(camera, "X");
-      localSystem.updateSpriteScaleForLabel(camera, "Y");
-      localSystem.updateSpriteScaleForLabel(camera, "Z");
+      localSystem.updateSpriteScaleForLabel(cameraRef.current, "X");
+      localSystem.updateSpriteScaleForLabel(cameraRef.current, "Y");
+      localSystem.updateSpriteScaleForLabel(cameraRef.current, "Z");
 
       const quaternionLeft = localSystem.updateQuaternionLine(
         "1",
@@ -183,7 +193,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
       localSystem.updateThreeQuaternionLine(
         "3",
         quaternionResult,
-        new THREE.Color("rgb(255, 0, 0)")
+        new THREE.Color("rgb(255, 0, 0)"),
+        isSetTraceRef.current
       );
 
       // расстояние от точки первого кватерниона до оси второго
@@ -228,14 +239,14 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         // camera.position.set(4, 1, 1);
         // camera.lookAt(new THREE.Vector3(0, 0, 0));
       } else if (coordinateSystemRef.current === 1) {
-        localSystem.adjustCamera(camera, quaternionLeft);
+        localSystem.adjustCamera(cameraRef.current, quaternionLeft);
       } else if (coordinateSystemRef.current === 2) {
-        localSystem.adjustCamera(camera, quaternionRight);
+        localSystem.adjustCamera(cameraRef.current, quaternionRight);
       } else if (coordinateSystemRef.current === 3) {
-        localSystem.adjustCamera(camera, quaternionResult);
+        localSystem.adjustCamera(cameraRef.current, quaternionResult);
       }
 
-      renderer.render(scene, camera);
+      renderer.render(scene, cameraRef.current);
     };
 
     animate();
