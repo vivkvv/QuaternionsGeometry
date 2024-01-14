@@ -16,7 +16,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
   quaternion1,
   quaternion2,
   coordinateSystem,
-  isOrthographicCamera
+  isOrthographicCamera,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
 
@@ -28,6 +28,10 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
 
   const controlPanelRef = useRef<HTMLDivElement>(null);
   const [controlPanelHeight, setControlPanelHeight] = useState(0);
+
+  const [localIsSphere, localSetSphere] = useState(false);
+  const [localIsCylinders, localSetCylinders] = useState(false);
+  const [localIsGreatCircles, localSetGreatCircles] = useState(false);
 
   useEffect(() => {
     if (controlPanelRef.current) {
@@ -47,6 +51,12 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           setOrthographicCamera={setLocalOrthographicCamera}
           isSetTrace={localSetTrace}
           setIsSetTrace={setLocalSetTrace}
+          isSphere={localIsSphere}
+          setIsSphere={localSetSphere}
+          isCylinders={localIsCylinders}
+          setIsCylinders={localSetCylinders}
+          isGreatCircles={localIsGreatCircles}
+          setIsGreatCircles={localSetGreatCircles}
         />
       </div>
       <div style={{ height: `calc(100% - ${controlPanelHeight}px)` }}>
@@ -57,6 +67,9 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           coordinateSystem={localCoordinateSystem}
           isOrthographicCamera={localOrthographicCamera}
           isSetTrace={localSetTrace}
+          isSphere={localIsSphere}
+          isCylinders={localIsCylinders}
+          isGreatCircles={localIsGreatCircles}
         />
       </div>
     </div>

@@ -11,6 +11,9 @@ interface GlobalSceneProps {
   coordinateSystem: number;
   isOrthographicCamera: boolean;
   isSetTrace: boolean;
+  isSphere: boolean;
+  isCylinders: boolean;
+  isGreatCircles: boolean;
 }
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({
@@ -19,7 +22,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   quaternion2,
   coordinateSystem,
   isOrthographicCamera,
-  isSetTrace
+  isSetTrace,
+  isSphere,
+  isCylinders,
+  isGreatCircles
 }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef(time);
@@ -28,6 +34,9 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   const coordinateSystemRef = useRef(coordinateSystem);
   const isOrthographicCameraRef = useRef(isOrthographicCamera);
   const isSetTraceRef = useRef(isSetTrace);
+  const isSphereRef = useRef(isSphere);
+  const isCylindersRef = useRef(isCylinders);
+  const isGreatCirclesRef = useRef(isGreatCircles);
 
   const cameraRef = useRef(new THREE.Camera());
   const perspectiveCamera = useMemo(() => {
@@ -59,25 +68,49 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     return cam;
   }, []);
 
-  useEffect(() => {
-    isSetTraceRef.current = isSetTrace;
-  }, [isSetTrace]);
+  function useSyncedRefs(dependencies: [any, any][] | ((boolean | React.MutableRefObject<boolean>)[] | (number | React.MutableRefObject<number>)[] | (TrigonometricalQuaternion | React.MutableRefObject<TrigonometricalQuaternion>)[])[]) {
+    useEffect(() => {
+      dependencies.forEach(([value, ref]) => {
+        ref.current = value;
+      });
+    }, dependencies.map((dep: any[]) => dep[0]));
+  }      
+  
+  useSyncedRefs([
+    [isSetTrace, isSetTraceRef],
+    [time, timeRef],
+    [quaternion1, quaternion1Ref],
+    [quaternion2, quaternion2Ref],    
+    [coordinateSystem, coordinateSystemRef],
+    [isSphere, isSphereRef],
+    [isCylinders, isCylindersRef],
+    [isGreatCircles,isGreatCirclesRef]
+  ]);
 
-  useEffect(() => {
-    timeRef.current = time;
-  }, [time]);
+  // useEffect(() => {
+  //   isSetTraceRef.current = isSetTrace;
+  // }, [isSetTrace]);
 
-  useEffect(() => {
-    quaternion1Ref.current = quaternion1;
-  }, [quaternion1]);
+  // useEffect(() => {
+  //   timeRef.current = time;
+  // }, [time]);
 
-  useEffect(() => {
-    quaternion2Ref.current = quaternion2;
-  }, [quaternion2]);
+  // useEffect(() => {
+  //   quaternion1Ref.current = quaternion1;
+  // }, [quaternion1]);
 
-  useEffect(() => {
-    coordinateSystemRef.current = coordinateSystem;
-  }, [coordinateSystem]);
+  // useEffect(() => {
+  //   quaternion2Ref.current = quaternion2;
+  // }, [quaternion2]);
+
+  // useEffect(() => {
+  //   coordinateSystemRef.current = coordinateSystem;
+  // }, [coordinateSystem]);
+
+  // useEffect(() => {
+  //   isGreatCirclesRef.current = isGreatCircles;
+  // }, [isGreatCircles]);
+
 
   useEffect(() => {
     isOrthographicCameraRef.current = isOrthographicCamera;
