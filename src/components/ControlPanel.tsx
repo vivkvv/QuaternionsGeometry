@@ -30,6 +30,20 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         {isRunning ? <FaPause /> : <FaPlay />}
       </button> */}
 
+      {/* <div className="flex items-center">
+        <label htmlFor="exclusiveView" className="text-xs mr-2">
+          Exclusive View:
+        </label>
+        <input
+          id="exclusiveView"
+          type="checkbox"
+          onChange={(e) =>
+            setExclusiveView(e.target.checked ? coordinateSystem : null)
+          }
+          className="form-checkbox h-4 w-4"
+        />
+      </div> */}
+
       <div className="flex items-center">
         <label htmlFor="mark" className="text-xs mr-2">
           Mark:

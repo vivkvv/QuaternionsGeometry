@@ -190,6 +190,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         quaternionRight
       );
 
+      localSystem.updateCircleLines(quaternionLeft, quaternionRight);
+
       localSystem.updateThreeQuaternionLine(
         "3",
         quaternionResult,
@@ -234,6 +236,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         r2Axe1,
         quaternion1Ref.current.color
       );
+
+      localSystem.updateCircleLines(quaternionLeft, quaternionRight);      
 
       if (coordinateSystemRef.current === 0) {
         // camera.position.set(4, 1, 1);

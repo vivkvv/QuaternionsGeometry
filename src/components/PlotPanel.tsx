@@ -16,7 +16,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
   quaternion1,
   quaternion2,
   coordinateSystem,
-  isOrthographicCamera,
+  isOrthographicCamera
 }) => {
   const [isRunning, setIsRunning] = useState(false);
 
