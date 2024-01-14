@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Quaternions multiplication geometry",
+  "name": "Application  for visualizing of geometry of quaternions multiplication",
   "icons": [
     {
       "src": "favicon.ico",
