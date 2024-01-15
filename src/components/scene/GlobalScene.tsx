@@ -11,9 +11,10 @@ interface GlobalSceneProps {
   coordinateSystem: number;
   isOrthographicCamera: boolean;
   isSetTrace: boolean;
-  isSphere: boolean;
-  isCylinders: boolean;
-  isGreatCircles: boolean;
+  isSpheraVisible: boolean;
+  spheraColor: any;
+  isCylindersVisible: boolean;
+  isGreatCirclesVisible: boolean;
 }
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({
@@ -23,9 +24,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   coordinateSystem,
   isOrthographicCamera,
   isSetTrace,
-  isSphere,
-  isCylinders,
-  isGreatCircles
+  isSpheraVisible,
+  spheraColor,
+  isCylindersVisible,
+  isGreatCirclesVisible
 }) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef(time);
@@ -34,15 +36,19 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   const coordinateSystemRef = useRef(coordinateSystem);
   const isOrthographicCameraRef = useRef(isOrthographicCamera);
   const isSetTraceRef = useRef(isSetTrace);
-  const isSphereRef = useRef(isSphere);
-  const isCylindersRef = useRef(isCylinders);
-  const isGreatCirclesRef = useRef(isGreatCircles);
+  const isSpheraVisibleRef = useRef(isSpheraVisible);
+  const spheraColorRef = useRef(spheraColor);
+  const isCylindersVisibleRef = useRef(isCylindersVisible);
+  const isGreatCirclesVisibleRef = useRef(isGreatCirclesVisible);
 
   const cameraRef = useRef(new THREE.Camera());
   const perspectiveCamera = useMemo(() => {
+    const width = mountRef.current ? mountRef.current.clientWidth : window.innerWidth;
+    const height = mountRef.current ? mountRef.current.clientHeight : window.innerHeight;          
+
     const cam = new THREE.PerspectiveCamera(
       45,
-      window.innerWidth / window.innerHeight,
+      width / height,
       0.1,
       1000
     );
@@ -52,7 +58,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   }, []);
 
   const orthographicCamera = useMemo(() => {
-    const aspect = window.innerWidth / window.innerHeight;
+    const width = mountRef.current ? mountRef.current.clientWidth : window.innerWidth;
+    const height = mountRef.current ? mountRef.current.clientHeight : window.innerHeight;          
+
+    const aspect = width / height;
     const frustumSize = 5;
 
     const cam = new THREE.OrthographicCamera(
@@ -68,49 +77,25 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     return cam;
   }, []);
 
-  function useSyncedRefs(dependencies: [any, any][] | ((boolean | React.MutableRefObject<boolean>)[] | (number | React.MutableRefObject<number>)[] | (TrigonometricalQuaternion | React.MutableRefObject<TrigonometricalQuaternion>)[])[]) {
-    useEffect(() => {
-      dependencies.forEach(([value, ref]) => {
-        ref.current = value;
-      });
-    }, dependencies.map((dep: any[]) => dep[0]));
-  }      
-  
-  useSyncedRefs([
-    [isSetTrace, isSetTraceRef],
-    [time, timeRef],
-    [quaternion1, quaternion1Ref],
-    [quaternion2, quaternion2Ref],    
-    [coordinateSystem, coordinateSystemRef],
-    [isSphere, isSphereRef],
-    [isCylinders, isCylindersRef],
-    [isGreatCircles,isGreatCirclesRef]
-  ]);
+  useEffect(() => {
+    isSetTraceRef.current = isSetTrace;
+  }, [isSetTrace]);
 
-  // useEffect(() => {
-  //   isSetTraceRef.current = isSetTrace;
-  // }, [isSetTrace]);
+  useEffect(() => {
+    timeRef.current = time;
+  }, [time]);
 
-  // useEffect(() => {
-  //   timeRef.current = time;
-  // }, [time]);
+  useEffect(() => {
+    quaternion1Ref.current = quaternion1;
+  }, [quaternion1]);
 
-  // useEffect(() => {
-  //   quaternion1Ref.current = quaternion1;
-  // }, [quaternion1]);
+  useEffect(() => {
+    quaternion2Ref.current = quaternion2;
+  }, [quaternion2]);
 
-  // useEffect(() => {
-  //   quaternion2Ref.current = quaternion2;
-  // }, [quaternion2]);
-
-  // useEffect(() => {
-  //   coordinateSystemRef.current = coordinateSystem;
-  // }, [coordinateSystem]);
-
-  // useEffect(() => {
-  //   isGreatCirclesRef.current = isGreatCircles;
-  // }, [isGreatCircles]);
-
+  useEffect(() => {
+    coordinateSystemRef.current = coordinateSystem;
+  }, [coordinateSystem]);
 
   useEffect(() => {
     isOrthographicCameraRef.current = isOrthographicCamera;
@@ -137,6 +122,40 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     };
   }
 
+  const scene = useMemo(() => {
+    return new THREE.Scene();
+  }, []);
+
+  const localSystem = useMemo(() => {
+    return new LocalCoordinateSystem();
+  }, []);
+
+  scene.add(localSystem);
+  localSystem.createOrUpdateSphera(
+    spheraColorRef.current,
+    isSpheraVisibleRef.current
+  );
+
+  useEffect(() => {
+    isSpheraVisibleRef.current = isSpheraVisible;
+    spheraColorRef.current = spheraColor;
+    localSystem.createOrUpdateSphera(
+      spheraColorRef.current,
+      isSpheraVisibleRef.current
+    );
+  }, [isSpheraVisible, spheraColor, localSystem]);
+
+  useEffect(() => {
+    isCylindersVisibleRef.current = isCylindersVisible;
+    localSystem.updateCylinderVisibility("4", isCylindersVisibleRef.current);
+    localSystem.updateCylinderVisibility("5", isCylindersVisibleRef.current);
+  }, [isCylindersVisible, localSystem]);
+
+  useEffect(() => {
+    isGreatCirclesVisibleRef.current = isGreatCirclesVisible;
+    localSystem.updateCirclesVisibility(isGreatCirclesVisibleRef.current);
+  }, [isGreatCirclesVisible, localSystem]);
+
   useEffect(() => {
     if (!mountRef.current) {
       return;
@@ -146,10 +165,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     const height = mountRef.current.clientHeight;
 
     const mount = mountRef.current;
-    const scene = new THREE.Scene();
+    //const scene = new THREE.Scene();
 
     const handleResize = () => {
-      if (!mountRef.current) {
+      if (!mountRef.current || !renderer) {
         return;
       }
 
@@ -174,8 +193,11 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     const renderer = new THREE.WebGLRenderer({
       /*alpha: true, */ antialias: true,
     });
+
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
+
+    handleResize();
 
     const orthographicControl = new OrbitControls(
       orthographicCamera,
@@ -190,9 +212,6 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     perspectiveControl.enablePan = false;
 
     mount.appendChild(renderer.domElement);
-
-    const localSystem = new LocalCoordinateSystem();
-    scene.add(localSystem);
 
     const animate = () => {
       orthographicControl.update();
@@ -270,7 +289,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         quaternion1Ref.current.color
       );
 
-      localSystem.updateCircleLines(quaternionLeft, quaternionRight);      
+      localSystem.updateCircleLines(quaternionLeft, quaternionRight);
 
       if (coordinateSystemRef.current === 0) {
         // camera.position.set(4, 1, 1);
@@ -296,7 +315,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         mount.removeChild(renderer.domElement);
       }
     };
-  }, [orthographicCamera, perspectiveCamera]);
+  }, [orthographicCamera, perspectiveCamera, localSystem, scene]);
 
   return (
     <div className="w-full h-full bg-black">

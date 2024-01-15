@@ -3,6 +3,7 @@ import React, { useState } from "react";
 // import { FaPlay, FaPause } from "react-icons/fa";
 
 interface ControlPanelProps {
+  index: number,
   isRunning: boolean;
   setIsRunning: (isRunning: boolean) => void;
   coordinateSystem: number;
@@ -11,8 +12,8 @@ interface ControlPanelProps {
   setOrthographicCamera: (orthographicCamera: boolean) => void;
   isSetTrace: boolean;
   setIsSetTrace: (setTrace: boolean) => void;
-  isSphere: boolean;
-  setIsSphere: (setSphere: boolean) => void;
+  isSpheraVisible: boolean;
+  setIsSpheraVisible: (spheraVisible: boolean) => void;
   isCylinders: boolean;
   setIsCylinders: (setCylinders: boolean) => void;
   isGreatCircles: boolean;
@@ -20,6 +21,7 @@ interface ControlPanelProps {
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
+  index,
   isRunning,
   setIsRunning,
   coordinateSystem,
@@ -28,8 +30,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setOrthographicCamera,
   isSetTrace,
   setIsSetTrace,
-  isSphere,
-  setIsSphere,
+  isSpheraVisible,
+  setIsSpheraVisible,
   isCylinders,
   setIsCylinders,
   isGreatCircles,
@@ -60,7 +62,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
       <div className="flex items-center mr-4">
         <select
-          id="viewSelect"
+          id={`viewSelect${index}`}
           value={coordinateSystem}
           onChange={(e) => setCoordinateSystem(parseInt(e.target.value, 10))}
           className="form-select border border-x-gray-400"
@@ -73,11 +75,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </div>
 
       <div className="flex items-center">
-        <label htmlFor="mark" className="text-xs mr-2">
-          Mark
+        <label htmlFor={`trace${index}`} className="text-xs mr-2">
+          Trace
         </label>
         <input
-          id="mark"
+          id={`trace${index}`}
           type="checkbox"
           checked={isSetTrace}
           onChange={(e) => setIsSetTrace(e.target.checked)}
@@ -86,11 +88,11 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       </div>
 
       <div className="flex items-center">
-        <label htmlFor="cameraType" className="text-xs mr-2">
+        <label htmlFor={`cameraType${index}`} className="text-xs mr-2">
           Orthographic
         </label>
         <input
-          id="cameraType"
+          id={`cameraType${index}`}
           type="checkbox"
           checked={isOrthographicCamera}
           onChange={(e) => setOrthographicCamera(e.target.checked)}
@@ -110,8 +112,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={isSphere}
-                  onChange={(e) => setIsSphere(e.target.checked)}
+                  checked={isSpheraVisible}
+                  onChange={(e) => setIsSpheraVisible(e.target.checked)}
                 />
                 <span className="ml-2">Sphere</span>
               </label>
@@ -135,7 +137,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   checked={isGreatCircles}
                   onChange={(e) => setIsGreatCircles(e.target.checked)}
                 />
-                <span className="ml-2">Great Circles</span>
+                <span className="ml-2">Circles</span>
               </label>
             </div>
           </div>

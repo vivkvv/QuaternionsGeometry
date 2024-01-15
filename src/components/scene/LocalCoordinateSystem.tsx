@@ -17,9 +17,10 @@ class BigCircleLines extends THREE.Object3D {
   private rightQuaternion: THREE.Quaternion;
   private zeroQuaternion = new THREE.Quaternion(0, 0, 0, 0);
 
-  constructor(left: THREE.Quaternion, right: THREE.Quaternion) {
+  constructor(left: THREE.Quaternion, right: THREE.Quaternion, visible: boolean) {
     super();
 
+    this.visible = visible;
     this.leftQuaternion = left.clone();
     this.rightQuaternion = right.clone();
 
@@ -52,6 +53,7 @@ class BigCircleLines extends THREE.Object3D {
   }
 
   private updateBigCircleLines() {
+
     const getPointsForCircleLine = (
       point: THREE.Vector3,
       axe: THREE.Vector3,
@@ -61,7 +63,7 @@ class BigCircleLines extends THREE.Object3D {
       let points = new Array<THREE.Vector3>();
 
       for (let angle = minAngle; angle < maxAngle; angle += 0.01) {
-        const p = point.clone().applyAxisAngle(axe, angle);
+        const p = point.clone().applyAxisAngle(axe.clone(), angle);
         points.push(p);
       }
 
@@ -70,39 +72,19 @@ class BigCircleLines extends THREE.Object3D {
 
     this.clear();
 
+    // if(!this.circlesVisibility) return;
+
     const leftVector = this.getNormalizedVector(this.leftQuaternion);
     const rightVector = this.getNormalizedVector(this.rightQuaternion);
 
-    const getBigCircleLine = (point: THREE.Vector3, axe: THREE.Vector3) => {
-      const points = getPointsForCircleLine(point, axe, 0, 2 * Math.PI);
+    const getBigCircleLine = (point: THREE.Vector3, axe: THREE.Vector3, minAngle: number, maxAngle: number) => {
+      const points = getPointsForCircleLine(point, axe, minAngle, maxAngle);
       let geometry = new THREE.BufferGeometry().setFromPoints(points);
       let material = new THREE.PointsMaterial({ color: "white", size: 0.05 });
       let lineObject = new THREE.LineSegments(geometry, material);
       return lineObject;
     };
 
-    let bigCirclePoint: THREE.Vector3 = rightVector
-      .clone()
-      .applyAxisAngle(leftVector, Math.acos(this.leftQuaternion.w))
-      .normalize();
-    let axe = new THREE.Vector3()
-      .crossVectors(leftVector, bigCirclePoint)
-      .normalize();
-    this.add(getBigCircleLine(bigCirclePoint, axe));
-
-    bigCirclePoint = leftVector
-      .clone()
-      .applyAxisAngle(rightVector, -Math.acos(this.rightQuaternion.w))
-      .normalize();
-    axe = new THREE.Vector3()
-      .crossVectors(rightVector, bigCirclePoint)
-      .normalize();
-    this.add(getBigCircleLine(bigCirclePoint, axe));
-
-    axe = new THREE.Vector3().crossVectors(rightVector, leftVector).normalize();
-    this.add(getBigCircleLine(leftVector, axe));
-
-    //
     const resultQuaternion = this.leftQuaternion
       .clone()
       .multiply(this.rightQuaternion.clone());
@@ -112,78 +94,96 @@ class BigCircleLines extends THREE.Object3D {
       resultQuaternion.z
     ).normalize();
 
-    const calculateSphericalTriangleAngles = (
-      leftVector: THREE.Vector3,
-      rightVector: THREE.Vector3,
-      resultVector: THREE.Vector3
-    ) => {
-      // Нормализация векторов
-      const leftVectorNorm = leftVector.normalize();
-      const rightVectorNorm = rightVector.normalize();
-      const resultVectorNorm = resultVector.normalize();
 
-      // Вычисление углов сферического треугольника
-      const angleAlpha =
-        (leftVectorNorm.angleTo(rightVectorNorm) * 180) / Math.PI;
-      const angleBeta =
-        (rightVectorNorm.angleTo(resultVectorNorm) * 180) / Math.PI;
-      const angleGamma =
-        (resultVectorNorm.angleTo(leftVectorNorm) * 180) / Math.PI;
+    let bigCirclePoint: THREE.Vector3 = rightVector
+      .clone()
+      .applyAxisAngle(leftVector.clone(), Math.acos(this.leftQuaternion.w))
+      .normalize();
+    let axe = new THREE.Vector3()
+      .crossVectors(leftVector.clone(), bigCirclePoint.clone())
+      .normalize();
+    let angle = resultVector.angleTo(leftVector);
+    this.add(getBigCircleLine(leftVector.clone(), axe, 0, angle));
 
-      return { angleAlpha, angleBeta, angleGamma };
-    };
+    bigCirclePoint = leftVector
+      .clone()
+      .applyAxisAngle(rightVector, -Math.acos(this.rightQuaternion.w))
+      .normalize();
+    axe = new THREE.Vector3()
+      .crossVectors(rightVector, bigCirclePoint.clone())
+      .normalize();
+    angle = resultVector.angleTo(rightVector);      
+    this.add(getBigCircleLine(rightVector.clone(), axe, 0, angle));
 
-    // Тестирование функции
-    // const leftVector = new THREE.Vector3(1, 0, 0);
-    // const rightVector = new THREE.Vector3(0, 1, 0);
-    // const resultVector = new THREE.Vector3(0, 0, 1);
+    axe = new THREE.Vector3().crossVectors(rightVector, leftVector).normalize();
+    angle = rightVector.angleTo(leftVector);
+    this.add(getBigCircleLine(rightVector, axe, 0, angle));
 
-    let angles = calculateSphericalTriangleAngles(
-      leftVector.clone(),
-      rightVector.clone(),
-      resultVector.clone()
-    );
-    //console.log(angles);
 
-    const calculateTriangleAngles = (
-      A: THREE.Vector3,
-      B: THREE.Vector3,
-      C: THREE.Vector3
-    ) => {
-      // Функция для вычисления длины стороны между двумя точками
-      const sideLength = (point1: THREE.Vector3, point2: THREE.Vector3) => {
-        const dx = point2.x - point1.x;
-        const dy = point2.y - point1.y;
-        const dz = point2.z - point1.z;
-        return Math.sqrt(dx * dx + dy * dy + dz * dz);
-      };
+    // const calculateSphericalTriangleAngles = (
+    //   leftVector: THREE.Vector3,
+    //   rightVector: THREE.Vector3,
+    //   resultVector: THREE.Vector3
+    // ) => {
+    //   // Нормализация векторов
+    //   const leftVectorNorm = leftVector.normalize();
+    //   const rightVectorNorm = rightVector.normalize();
+    //   const resultVectorNorm = resultVector.normalize();
 
-      // Вычисление длин сторон
-      const AB = sideLength(A, B);
-      const BC = sideLength(B, C);
-      const CA = sideLength(C, A);
+    //   // Вычисление углов сферического треугольника
+    //   const angleAlpha =
+    //     (leftVectorNorm.angleTo(rightVectorNorm) * 180) / Math.PI;
+    //   const angleBeta =
+    //     (rightVectorNorm.angleTo(resultVectorNorm) * 180) / Math.PI;
+    //   const angleGamma =
+    //     (resultVectorNorm.angleTo(leftVectorNorm) * 180) / Math.PI;
 
-      // Применение закона косинусов для вычисления углов
-      const alpha =
-        (Math.acos((BC * BC + CA * CA - AB * AB) / (2 * BC * CA)) * 180) /
-        Math.PI;
-      const beta =
-        (Math.acos((CA * CA + AB * AB - BC * BC) / (2 * CA * AB)) * 180) /
-        Math.PI;
-      const gamma =
-        (Math.acos((AB * AB + BC * BC - CA * CA) / (2 * AB * BC)) * 180) /
-        Math.PI;
+    //   return { angleAlpha, angleBeta, angleGamma };
+    // };
 
-      return { alpha, beta, gamma };
-    };
+    // let angles = calculateSphericalTriangleAngles(
+    //   leftVector.clone(),
+    //   rightVector.clone(),
+    //   resultVector.clone()
+    // );
 
-    const angles1 = calculateTriangleAngles(
-      leftVector.clone(),
-      rightVector.clone(),
-      resultVector.clone()
-    );
+    // const calculateTriangleAngles = (
+    //   A: THREE.Vector3,
+    //   B: THREE.Vector3,
+    //   C: THREE.Vector3
+    // ) => {
+    //   // Функция для вычисления длины стороны между двумя точками
+    //   const sideLength = (point1: THREE.Vector3, point2: THREE.Vector3) => {
+    //     const dx = point2.x - point1.x;
+    //     const dy = point2.y - point1.y;
+    //     const dz = point2.z - point1.z;
+    //     return Math.sqrt(dx * dx + dy * dy + dz * dz);
+    //   };
 
-    //console.log(angles1);
+    //   // Вычисление длин сторон
+    //   const AB = sideLength(A, B);
+    //   const BC = sideLength(B, C);
+    //   const CA = sideLength(C, A);
+
+    //   // Применение закона косинусов для вычисления углов
+    //   const alpha =
+    //     (Math.acos((BC * BC + CA * CA - AB * AB) / (2 * BC * CA)) * 180) /
+    //     Math.PI;
+    //   const beta =
+    //     (Math.acos((CA * CA + AB * AB - BC * BC) / (2 * CA * AB)) * 180) /
+    //     Math.PI;
+    //   const gamma =
+    //     (Math.acos((AB * AB + BC * BC - CA * CA) / (2 * AB * BC)) * 180) /
+    //     Math.PI;
+
+    //   return { alpha, beta, gamma };
+    // };
+
+    // const angles1 = calculateTriangleAngles(
+    //   leftVector.clone(),
+    //   rightVector.clone(),
+    //   resultVector.clone()
+    // );
   }
 }
 
@@ -191,7 +191,8 @@ class LocalCoordinateSystem extends THREE.Object3D {
   tree = new kdTree([], distance, ["x", "y", "z"]);
   bigCircleLines = new BigCircleLines(
     new THREE.Quaternion(0, 0, 0, 0),
-    new THREE.Quaternion(0, 0, 0, 0)
+    new THREE.Quaternion(0, 0, 0, 0),
+    true
   );
 
   constructor() {
@@ -200,7 +201,6 @@ class LocalCoordinateSystem extends THREE.Object3D {
     // directionalLight.position.set(5, 5, 5); // позиция источника света
     // this.add(directionalLight);
 
-    this.createShere();
     this.add(this.bigCircleLines);
 
     // Здесь можно добавить оси, сетку и другие элементы
@@ -294,6 +294,50 @@ class LocalCoordinateSystem extends THREE.Object3D {
     return new THREE.Quaternion(x, y, z, w);
   }
 
+  createOrUpdateSphera(rgbaColor: any, visible: boolean) {
+    let sphera = this.getObjectByName(`unite-sphere`) as THREE.Mesh;
+
+    const color = new THREE.Color(
+      `rgb(${rgbaColor.color.r}, ${rgbaColor.color.g}, ${rgbaColor.color.b})`
+    );
+    const opacity: number = rgbaColor.color.a;
+
+    if (!sphera) {
+      sphera = new THREE.Mesh(
+        new THREE.SphereGeometry(1),
+        new THREE.MeshBasicMaterial({
+          color: color,
+          opacity: opacity,
+          transparent: true,
+          side: THREE.DoubleSide,
+        })
+      );
+      sphera.name = `unite-sphere`;
+      sphera.visible = visible;
+      this.add(sphera);
+    } else {
+      if (sphera.material instanceof THREE.MeshBasicMaterial) {
+        sphera.material.color.set(color);
+        sphera.material.opacity = opacity;
+        sphera.visible = visible;
+      }
+    }
+  }
+
+  updateCirclesVisibility(visible: boolean){
+    this.bigCircleLines.visible = visible;
+  }
+
+  updateCylinderVisibility(id: string, visible: boolean) {
+    const cylinder = this.getObjectByName(`quaternionCylinder-${id}`);
+    const ring1 = this.getObjectByName(`quaternionRing1-${id}`);
+    const ring2 = this.getObjectByName(`quaternionRing2-${id}`);
+
+    if (cylinder) cylinder.visible = visible;
+    if (ring1) ring1.visible = visible;
+    if (ring2) ring2.visible = visible;
+  }
+
   createOrUpdateCylinder(
     id: string,
     target: THREE.Vector3,
@@ -381,8 +425,6 @@ class LocalCoordinateSystem extends THREE.Object3D {
       const ringMaterial = new THREE.MeshBasicMaterial({
         color: new THREE.Color(color), //"rgb(255, 255, 0)"), //color, // Цвет цилиндра
         transparent: false, // Включаем прозрачность
-        //opacity: opacity, // Задаем полупрозрачность
-        // wireframe: true,
         side: THREE.DoubleSide,
       });
 
@@ -435,7 +477,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
     id: string,
     threeQuaternion: THREE.Quaternion,
     color: THREE.Color,
-    markPosition: boolean = false
+    tracePosition: boolean = false
   ) {
     const object = this.getObjectByName(`quaternionLine-${id}`);
     const line = object as THREE.Line;
@@ -470,10 +512,10 @@ class LocalCoordinateSystem extends THREE.Object3D {
 
       const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
-      const dashedLine = new THREE.Line(geometry, material /*dashedMaterial*/);
-      dashedLine.computeLineDistances();
-      dashedLine.name = `quaternionLine-${id}`;
-      this.add(dashedLine);
+      const line = new THREE.Line(geometry, material /*dashedMaterial*/);
+      line.computeLineDistances();
+      line.name = `quaternionLine-${id}`;
+      this.add(line);
 
       // Создаем сферу
       const sphereGeometry = new THREE.SphereGeometry(0.05, 32, 32);
@@ -484,8 +526,22 @@ class LocalCoordinateSystem extends THREE.Object3D {
         threeQuaternion.x,
         threeQuaternion.y,
         threeQuaternion.z
-      ); // Устанавливаем позицию сферы на конец линии
+      );
       this.add(sphere);
+
+      // add small spheres at points +1 and -1
+      const normalizedVector = new THREE.Vector3(threeQuaternion.x, threeQuaternion.y, threeQuaternion.z).normalize();
+      const endSphereGeometry = new THREE.SphereGeometry(0.01, 32, 32);
+
+      let endSphere = new THREE.Mesh(endSphereGeometry, sphereMaterial);
+      endSphere.name = `quaternionEndSphera1-${id}`;
+      endSphere.position.set(normalizedVector.x, normalizedVector.y, normalizedVector.z);
+      this.add(endSphere);
+
+      endSphere = new THREE.Mesh(endSphereGeometry, sphereMaterial);
+      endSphere.name = `quaternionEndSphera2-${id}`;
+      endSphere.position.set(-normalizedVector.x, -normalizedVector.y, -normalizedVector.z);
+      this.add(endSphere);
     } else {
       line.geometry.setFromPoints(points);
       if (line.material instanceof THREE.LineBasicMaterial) {
@@ -502,15 +558,35 @@ class LocalCoordinateSystem extends THREE.Object3D {
           threeQuaternion.x,
           threeQuaternion.y,
           threeQuaternion.z
-        ); // Обновляем позицию сферы
+        );
 
         if (sphere.material instanceof THREE.MeshBasicMaterial) {
           sphere.material.color.set(color);
         }
       }
+
+      // add small spheres at points +1 and -1
+      const normalizedVector = new THREE.Vector3(threeQuaternion.x, threeQuaternion.y, threeQuaternion.z).normalize();
+
+      const endSphere1 = this.getObjectByName(`quaternionEndSphera1-${id}`) as THREE.Mesh;
+      if(endSphere1){
+        endSphere1.position.set(normalizedVector.x, normalizedVector.y, normalizedVector.z);
+      }
+      if (endSphere1.material instanceof THREE.MeshBasicMaterial) {
+        endSphere1.material.color.set(color);
+      }
+
+      const endSphere2 = this.getObjectByName(`quaternionEndSphera2-${id}`) as THREE.Mesh;
+      if(endSphere2){
+        endSphere2.position.set(-normalizedVector.x, -normalizedVector.y, -normalizedVector.z);
+      }
+      if (endSphere2.material instanceof THREE.MeshBasicMaterial) {
+        endSphere2.material.color.set(color);
+      }
+
     }
 
-    if (markPosition) {
+    if (tracePosition) {
       const nearstPoint = this.tree.nearest(
         { x: threeQuaternion.x, y: threeQuaternion.y, z: threeQuaternion.z },
         1,
@@ -527,7 +603,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
         const sphereGeometry = new THREE.SphereGeometry(0.02, 32, 32);
         const sphereMaterial = new THREE.MeshBasicMaterial({ color: "white" });
         const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-        sphere.name = `mark`;
+        sphere.name = `trace`;
         sphere.position.set(
           threeQuaternion.x,
           threeQuaternion.y,
@@ -538,7 +614,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
         // const projectionGeometry = new THREE.SphereGeometry(0.02, 32, 32);
         // const projectionMaterial = new THREE.MeshBasicMaterial({color: "lightblue"});
         // const projectionSphere = new THREE.Mesh(projectionGeometry, projectionMaterial);
-        // projectionSphere.name = 'projection-mark';
+        // projectionSphere.name = 'projection-trace';
         // const projectionVector = new THREE.Vector3(threeQuaternion.x, threeQuaternion.y, threeQuaternion.z).normalize();
         // projectionSphere.position.set(projectionVector.x, projectionVector.y, projectionVector.z);
         // this.add(projectionSphere);
@@ -561,19 +637,6 @@ class LocalCoordinateSystem extends THREE.Object3D {
     this.updateThreeQuaternionLine(id, threeQuaternion, color);
 
     return threeQuaternion;
-  }
-
-  createShere() {
-    const sphere = new THREE.Mesh(
-      new THREE.SphereGeometry(1),
-      new THREE.MeshBasicMaterial({
-        color: "pink",
-        opacity: 0.2,
-        transparent: true,
-        side: THREE.DoubleSide,
-      })
-    );
-    this.add(sphere);
   }
 
   createAxis(direction: THREE.Vector3, color: string, label: string): void {

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
-import SketchExample from "./SketchPicker";
+// import SketchExample from "./SketchPicker";
 
 interface QuaternionPropertiesProps {
   index: number; // Добавляем пропс для индекса
@@ -17,17 +17,17 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
   const [phi0, setPhi0] = useState(quaternion.phi0); // Угол в градусах
   const [nu, setNu] = useState(quaternion.nu); // Частота ν
   const [n, setN] = useState(quaternion.n);
-  const [color, setColor] = useState(quaternion.color);
+  //const [color, setColor] = useState(quaternion.color);
 
-  const handleColorChange = (color: any) => {
-    //const newColor = color; //`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`;
-    const newQuaternion = {
-      ...quaternion,
-      color: color, // Обновляем цвет в кватернионе
-    };
-    setQuaternion(newQuaternion); // Устанавливаем новое состояние кватерниона
-    setColor(color);
-  };
+  // const handleColorChange = (color: any) => {
+  //   //const newColor = color; //`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`;
+  //   const newQuaternion = {
+  //     ...quaternion,
+  //     color: color, // Обновляем цвет в кватернионе
+  //   };
+  //   setQuaternion(newQuaternion); // Устанавливаем новое состояние кватерниона
+  //   setColor(color);
+  // };
 
   const handlePhi0Change = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPhi0 = parseFloat(event.target.value);
@@ -105,7 +105,7 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
 
   return (
     <div className="flex flex-col bg-gray-100">
-      <div className="flex justify-between items-center gap-x-2">
+      {/* <div className="flex justify-between items-center gap-x-2">
         <div className="flex flex-col items-center w-full">
           <SketchExample
             initialColor={{
@@ -117,21 +117,29 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
             onChange={handleColorChange}
           />
         </div>
-      </div>
+      </div> */}
 
       <div className="flex justify-between items-center gap-x-2">
         <div className="flex flex-col items-center w-full">
-          <label className="text-sm font-medium text-gray-700">φ₀°</label>
+          <label htmlFor={`phi0${index}`} className="text-sm font-medium text-gray-700">
+            φ₀°
+          </label>
           <input
+            id={`phi0${index}`}
+            name={`phi0${index}`}
             type="number"
             value={phi0}
             onChange={handlePhi0Change}
-            className="mt-1 p-2 border border-gray-300 w-full"
+            className="mt-1 p-2 border border-gray-300 w-full "
           />
         </div>
         <div className="flex flex-col items-center w-full">
-          <label className="text-sm font-medium text-gray-700">ν, Hz</label>
+          <label htmlFor={`nu${index}`} className="text-sm font-medium text-gray-700">
+            ν, Hz
+          </label>
           <input
+            id={`nu${index}`}
+            name={`nu${index}`}
             type="number"
             value={nu}
             onChange={handleNuChange}
@@ -141,10 +149,12 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
       </div>
       <div className="flex justify-between items-center gap-x-2 mb-4">
         <div className="flex flex-col items-center w-full">
-          <label className="text-sm font-medium text-gray-700">
+          <label htmlFor={`Nx${index}`} className="text-sm font-medium text-gray-700">
             n<sub>x</sub>
           </label>
           <input
+            id={`Nx${index}`}
+            name={`Nx${index}`}
             type="number"
             value={n.n1}
             onChange={handleDirectionVector("n1")}
@@ -152,10 +162,12 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
           />
         </div>
         <div className="flex flex-col items-center w-full">
-          <label className="text-sm font-medium text-gray-700">
+          <label htmlFor={`Ny${index}`} className="text-sm font-medium text-gray-700">
             n<sub>y</sub>
           </label>
           <input
+            id={`Ny${index}`}
+            name={`Ny${index}`}
             type="number"
             value={n.n2}
             onChange={handleDirectionVector("n2")}
@@ -163,10 +175,12 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
           />
         </div>
         <div className="flex flex-col items-center w-full">
-          <label className="text-sm font-medium text-gray-700">
+          <label htmlFor={`Nz${index}`} className="text-sm font-medium text-gray-700">
             n<sub>z</sub>
           </label>
           <input
+            id={`Nz${index}`}
+            name={`Nz${index}`}
             type="number"
             value={n.n3}
             onChange={handleDirectionVector("n3")}

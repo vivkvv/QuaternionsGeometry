@@ -4,19 +4,25 @@ import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
 import GlobalScene from "./scene/GlobalScene";
 
 interface PlotPanelProps {
+  index: number,
   time: number;
   quaternion1: TrigonometricalQuaternion;
   quaternion2: TrigonometricalQuaternion;
   coordinateSystem: number;
   isOrthographicCamera: boolean;
+
+  spheraColor: any;
 }
 
 const PlotPanel: React.FC<PlotPanelProps> = ({
+  index,
   time,
   quaternion1,
   quaternion2,
   coordinateSystem,
   isOrthographicCamera,
+
+  spheraColor,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
 
@@ -26,10 +32,11 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
     useState(isOrthographicCamera);
   const [localSetTrace, setLocalSetTrace] = useState(false);
 
+  const [localIsSpheraVisible, localSetIsSpheraVisible] = useState(false);
+
   const controlPanelRef = useRef<HTMLDivElement>(null);
   const [controlPanelHeight, setControlPanelHeight] = useState(0);
 
-  const [localIsSphere, localSetSphere] = useState(false);
   const [localIsCylinders, localSetCylinders] = useState(false);
   const [localIsGreatCircles, localSetGreatCircles] = useState(false);
 
@@ -43,6 +50,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
     <div className="border-2 border-gray-200 rounded-lg overflow-hidden h-full">
       <div ref={controlPanelRef}>
         <ControlPanel
+          index={index}
           isRunning={isRunning}
           setIsRunning={setIsRunning}
           coordinateSystem={localCoordinateSystem}
@@ -51,8 +59,8 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           setOrthographicCamera={setLocalOrthographicCamera}
           isSetTrace={localSetTrace}
           setIsSetTrace={setLocalSetTrace}
-          isSphere={localIsSphere}
-          setIsSphere={localSetSphere}
+          isSpheraVisible={localIsSpheraVisible}
+          setIsSpheraVisible={localSetIsSpheraVisible}
           isCylinders={localIsCylinders}
           setIsCylinders={localSetCylinders}
           isGreatCircles={localIsGreatCircles}
@@ -67,9 +75,10 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           coordinateSystem={localCoordinateSystem}
           isOrthographicCamera={localOrthographicCamera}
           isSetTrace={localSetTrace}
-          isSphere={localIsSphere}
-          isCylinders={localIsCylinders}
-          isGreatCircles={localIsGreatCircles}
+          isSpheraVisible={localIsSpheraVisible}
+          spheraColor={spheraColor}
+          isCylindersVisible={localIsCylinders}
+          isGreatCirclesVisible={localIsGreatCircles}
         />
       </div>
     </div>
