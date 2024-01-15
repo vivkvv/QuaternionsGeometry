@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/QuaternionsGeometry/static/css/main.ba8ed786.css",
-    "main.js": "/QuaternionsGeometry/static/js/main.d3249d04.js",
+    "main.css": "/QuaternionsGeometry/static/css/main.7ec39a49.css",
+    "main.js": "/QuaternionsGeometry/static/js/main.fbd7dc0b.js",
     "static/js/787.2c6fce2d.chunk.js": "/QuaternionsGeometry/static/js/787.2c6fce2d.chunk.js",
     "index.html": "/QuaternionsGeometry/index.html",
-    "main.ba8ed786.css.map": "/QuaternionsGeometry/static/css/main.ba8ed786.css.map",
-    "main.d3249d04.js.map": "/QuaternionsGeometry/static/js/main.d3249d04.js.map",
+    "main.7ec39a49.css.map": "/QuaternionsGeometry/static/css/main.7ec39a49.css.map",
+    "main.fbd7dc0b.js.map": "/QuaternionsGeometry/static/js/main.fbd7dc0b.js.map",
     "787.2c6fce2d.chunk.js.map": "/QuaternionsGeometry/static/js/787.2c6fce2d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ba8ed786.css",
-    "static/js/main.d3249d04.js"
+    "static/css/main.7ec39a49.css",
+    "static/js/main.fbd7dc0b.js"
   ]
 }
