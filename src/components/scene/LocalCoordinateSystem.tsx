@@ -197,9 +197,9 @@ class LocalCoordinateSystem extends THREE.Object3D {
 
   constructor() {
     super();
-    // const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // цвет и интенсивность
-    // directionalLight.position.set(5, 5, 5); // позиция источника света
-    // this.add(directionalLight);
+    const directionalLight = new THREE.DirectionalLight (0xffffff, 10); // цвет и интенсивность
+    directionalLight.position.set(2, 2, 2); // позиция источника света
+    this.add(directionalLight);
 
     this.add(this.bigCircleLines);
 
@@ -305,7 +305,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
     if (!sphera) {
       sphera = new THREE.Mesh(
         new THREE.SphereGeometry(1),
-        new THREE.MeshBasicMaterial({
+        new THREE.MeshPhongMaterial({
           color: color,
           opacity: opacity,
           transparent: true,
@@ -316,7 +316,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
       sphera.visible = visible;
       this.add(sphera);
     } else {
-      if (sphera.material instanceof THREE.MeshBasicMaterial) {
+      if (sphera.material instanceof THREE.MeshPhongMaterial) {
         sphera.material.color.set(color);
         sphera.material.opacity = opacity;
         sphera.visible = visible;

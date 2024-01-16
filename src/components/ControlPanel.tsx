@@ -3,7 +3,7 @@ import React, { useState } from "react";
 // import { FaPlay, FaPause } from "react-icons/fa";
 
 interface ControlPanelProps {
-  index: number,
+  index: number;
   isRunning: boolean;
   setIsRunning: (isRunning: boolean) => void;
   coordinateSystem: number;
@@ -18,6 +18,9 @@ interface ControlPanelProps {
   setIsCylinders: (setCylinders: boolean) => void;
   isGreatCircles: boolean;
   setIsGreatCircles: (setGreatCircles: boolean) => void;
+
+  isExclusiveViewActive: boolean;
+  onToggleExclusiveView: () => void;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -36,11 +39,27 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   setIsCylinders,
   isGreatCircles,
   setIsGreatCircles,
+
+  isExclusiveViewActive,
+  onToggleExclusiveView,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   return (
     <div className="flex items-center">
+      {/* Чекбокс для управления эксклюзивным режимом */}
+      <div className="flex items-center">
+        <label htmlFor={`exclusiveView${index}`} className="text-xs mr-2">
+          Exclusive View
+        </label>
+        <input
+          id={`exclusiveView${index}`}
+          type="checkbox"
+          checked={isExclusiveViewActive}
+          onChange={onToggleExclusiveView}
+          className="form-checkbox h-4 w-4 mr-4"
+        />
+      </div>
       {/* Кнопка Run с иконкой
       <button onClick={() => setIsRunning(!isRunning)}>
         {isRunning ? <FaPause /> : <FaPlay />}
@@ -115,7 +134,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
                   checked={isSpheraVisible}
                   onChange={(e) => setIsSpheraVisible(e.target.checked)}
                 />
-                <span className="ml-2">Sphere</span>
+                <span className="ml-2">Sphera</span>
               </label>
             </div>
 

@@ -4,7 +4,7 @@ import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
 import GlobalScene from "./scene/GlobalScene";
 
 interface PlotPanelProps {
-  index: number,
+  index: number;
   time: number;
   quaternion1: TrigonometricalQuaternion;
   quaternion2: TrigonometricalQuaternion;
@@ -12,6 +12,8 @@ interface PlotPanelProps {
   isOrthographicCamera: boolean;
 
   spheraColor: any;
+  isExclusiveViewActive: boolean;
+  onToggleExclusiveView: () => void;
 }
 
 const PlotPanel: React.FC<PlotPanelProps> = ({
@@ -23,6 +25,9 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
   isOrthographicCamera,
 
   spheraColor,
+
+  isExclusiveViewActive,
+  onToggleExclusiveView,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
 
@@ -65,6 +70,8 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           setIsCylinders={localSetCylinders}
           isGreatCircles={localIsGreatCircles}
           setIsGreatCircles={localSetGreatCircles}
+          isExclusiveViewActive={isExclusiveViewActive}
+          onToggleExclusiveView={onToggleExclusiveView}
         />
       </div>
       <div style={{ height: `calc(100% - ${controlPanelHeight}px)` }}>
