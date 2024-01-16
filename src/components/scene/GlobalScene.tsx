@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useMemo } from "react";
+import React, { useRef, useEffect, useMemo, useContext } from "react";
 import * as THREE from "three";
 import LocalCoordinateSystem from "./LocalCoordinateSystem";
 import { TrigonometricalQuaternion } from "../../TrigonometricalQuaternion";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import PlotViewContext from "../PlotViewContext";
 
 interface GlobalSceneProps {
   time: number;
@@ -27,8 +28,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   isSpheraVisible,
   spheraColor,
   isCylindersVisible,
-  isGreatCirclesVisible
+  isGreatCirclesVisible,
 }) => {
+  const { activePlotIndex } = useContext(PlotViewContext);
+
   const mountRef = useRef<HTMLDivElement | null>(null);
   const timeRef = useRef(time);
   const quaternion1Ref = useRef(quaternion1);
@@ -43,23 +46,26 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
 
   const cameraRef = useRef(new THREE.Camera());
   const perspectiveCamera = useMemo(() => {
-    const width = mountRef.current ? mountRef.current.clientWidth : window.innerWidth;
-    const height = mountRef.current ? mountRef.current.clientHeight : window.innerHeight;          
+    const width = mountRef.current
+      ? mountRef.current.clientWidth
+      : window.innerWidth;
+    const height = mountRef.current
+      ? mountRef.current.clientHeight
+      : window.innerHeight;
 
-    const cam = new THREE.PerspectiveCamera(
-      45,
-      width / height,
-      0.1,
-      1000
-    );
+    const cam = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
     cam.position.set(4, 1, 1);
     cam.up.set(0, 0, 1);
     return cam;
   }, []);
 
   const orthographicCamera = useMemo(() => {
-    const width = mountRef.current ? mountRef.current.clientWidth : window.innerWidth;
-    const height = mountRef.current ? mountRef.current.clientHeight : window.innerHeight;          
+    const width = mountRef.current
+      ? mountRef.current.clientWidth
+      : window.innerWidth;
+    const height = mountRef.current
+      ? mountRef.current.clientHeight
+      : window.innerHeight;
 
     const aspect = width / height;
     const frustumSize = 5;
@@ -269,7 +275,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
           quaternionRight.z
         ),
         r1Axe2,
-        quaternion2Ref.current.color
+        quaternion2Ref.current.color,
+        isCylindersVisibleRef.current
       );
 
       // расстояние от точки второго кватерниона до оси первого
@@ -286,7 +293,8 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         "5",
         new THREE.Vector3(quaternionLeft.x, quaternionLeft.y, quaternionLeft.z),
         r2Axe1,
-        quaternion1Ref.current.color
+        quaternion1Ref.current.color,
+        isCylindersVisibleRef.current
       );
 
       localSystem.updateCircleLines(quaternionLeft, quaternionRight);
@@ -315,7 +323,7 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
         mount.removeChild(renderer.domElement);
       }
     };
-  }, [orthographicCamera, perspectiveCamera, localSystem, scene]);
+  }, [orthographicCamera, perspectiveCamera, localSystem, scene, activePlotIndex]);
 
   return (
     <div className="w-full h-full bg-black">

@@ -19,7 +19,7 @@ interface ControlPanelProps {
   isGreatCircles: boolean;
   setIsGreatCircles: (setGreatCircles: boolean) => void;
 
-  isExclusiveViewActive: boolean;
+  // isExclusiveViewActive: boolean;
   onToggleExclusiveView: () => void;
 }
 
@@ -40,7 +40,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   isGreatCircles,
   setIsGreatCircles,
 
-  isExclusiveViewActive,
+  // isExclusiveViewActive,
   onToggleExclusiveView,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -55,7 +55,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         <input
           id={`exclusiveView${index}`}
           type="checkbox"
-          checked={isExclusiveViewActive}
+          // checked={isExclusiveViewActive}
           onChange={onToggleExclusiveView}
           className="form-checkbox h-4 w-4 mr-4"
         />

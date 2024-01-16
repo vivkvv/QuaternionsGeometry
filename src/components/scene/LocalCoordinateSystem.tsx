@@ -342,7 +342,8 @@ class LocalCoordinateSystem extends THREE.Object3D {
     id: string,
     target: THREE.Vector3,
     radius: number,
-    rgbaColor: any
+    rgbaColor: any,
+    visible: boolean
   ): void {
     const origin = new THREE.Vector3(0, 0, 0);
 
@@ -471,6 +472,10 @@ class LocalCoordinateSystem extends THREE.Object3D {
       .multiplyScalar(-length / 2) // Смещение на половину длины цилиндра
       .add(cylinder.position);
     ring2.position.copy(beginPosition);
+
+    cylinder.visible = visible;
+    ring1.visible = visible;
+    ring2.visible = visible;
   }
 
   updateThreeQuaternionLine(

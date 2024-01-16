@@ -12,7 +12,7 @@ interface PlotPanelProps {
   isOrthographicCamera: boolean;
 
   spheraColor: any;
-  isExclusiveViewActive: boolean;
+  // isExclusiveViewActive: boolean;
   onToggleExclusiveView: () => void;
 }
 
@@ -26,7 +26,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
 
   spheraColor,
 
-  isExclusiveViewActive,
+  // isExclusiveViewActive,
   onToggleExclusiveView,
 }) => {
   const [isRunning, setIsRunning] = useState(false);
@@ -70,7 +70,7 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           setIsCylinders={localSetCylinders}
           isGreatCircles={localIsGreatCircles}
           setIsGreatCircles={localSetGreatCircles}
-          isExclusiveViewActive={isExclusiveViewActive}
+          // isExclusiveViewActive={isExclusiveViewActive}
           onToggleExclusiveView={onToggleExclusiveView}
         />
       </div>
