@@ -4,6 +4,11 @@ import CommonPanel from "./components/CommonPanel";
 import PlotsManager from "./components/PlotsManager";
 import { TrigonometricalQuaternion } from "./TrigonometricalQuaternion";
 
+import { Chart, LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend } from 'chart.js';
+
+Chart.register(LineController, LineElement, PointElement, LinearScale, CategoryScale, Title, Tooltip, Legend);
+
+
 const App = () => {
   const [time, setTime] = useState(0);
   const [quaternion1, setQuaternion1] = useState<TrigonometricalQuaternion>({

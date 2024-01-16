@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
 import PlotPanel from "./PlotPanel";
 import PlotViewContext from "./PlotViewContext";
+import FourGridPlotPanel from "./scene/FourGridPlotPanel";
 
 interface PlotsManagerProps {
   time: number;
@@ -105,20 +106,64 @@ const PlotsManager: React.FC<PlotsManagerProps> = ({
               panelClasses = "hidden";
             }
           }
+
+          // Используем FourGridPlotPanel для последнего индекса
+          const PanelComponent =
+            coordinateSystem === 3 ? FourGridPlotPanel : PlotPanel;
+
+          const testData1 = {
+            datasets: [
+              {
+                label: "Точка 1",
+                data: [{ x: 10, y: 20 }],
+                backgroundColor: "rgba(255, 99, 132, 0.5)",
+              },
+              {
+                label: "Точка 2",
+                data: [{ x: 15, y: 10 }],
+                backgroundColor: "rgba(54, 162, 235, 0.5)",
+              },
+              {
+                label: "Точка 3",
+                data: [{ x: 7, y: 8 }],
+                backgroundColor: "rgba(75, 192, 192, 0.5)",
+              },
+            ],
+          };
+
+          const testData2 = {
+            datasets: [
+              {
+                label: "Точка 4",
+                data: [{ x: 20, y: 5 }],
+                backgroundColor: "rgba(153, 102, 255, 0.5)",
+              },
+              {
+                label: "Точка 5",
+                data: [{ x: 25, y: 15 }],
+                backgroundColor: "rgba(255, 159, 64, 0.5)",
+              },
+            ],
+          };
+
           return (
             <div key={coordinateSystem} className={panelClasses}>
-              <PlotPanel
-                index={coordinateSystem}
-                time={time}
-                quaternion1={quaternion1}
-                quaternion2={quaternion2}
-                coordinateSystem={coordinateSystem}
-                isOrthographicCamera={false}
-                spheraColor={spheraColor}
-                onToggleExclusiveView={() =>
-                  toggleExclusiveView(coordinateSystem)
-                }
-              />
+              {coordinateSystem === 3 ? (
+                <FourGridPlotPanel data1={testData1} data2={testData2} />
+              ) : (
+                <PlotPanel
+                  index={coordinateSystem}
+                  time={time}
+                  quaternion1={quaternion1}
+                  quaternion2={quaternion2}
+                  coordinateSystem={coordinateSystem}
+                  isOrthographicCamera={false}
+                  spheraColor={spheraColor}
+                  onToggleExclusiveView={() =>
+                    toggleExclusiveView(coordinateSystem)
+                  }
+                />
+              )}
             </div>
           );
         })}

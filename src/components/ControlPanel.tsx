@@ -50,7 +50,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
       {/* Чекбокс для управления эксклюзивным режимом */}
       <div className="flex items-center">
         <label htmlFor={`exclusiveView${index}`} className="text-xs mr-2">
-          Exclusive View
+          Exclusive
         </label>
         <input
           id={`exclusiveView${index}`}
