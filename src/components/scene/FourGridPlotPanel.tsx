@@ -1,61 +1,123 @@
-import React, { useEffect } from "react";
-import { Chart, ChartData } from "chart.js";
+import Plot from "react-plotly.js";
+import React, { useRef } from "react";
 
-const FourGridPlotPanel = ({
-  data1,
-  data2,
-}: {
-  data1: ChartData;
-  data2: ChartData;
+const plotConfig = {
+  displayModeBar: false, // Отключает отображение панели инструментов при наведении
+};
+
+const plotLayout = {
+  showlegend: false,
+  xaxis: {
+    title: "N1",
+    showgrid: true,
+    zeroline: true,
+    range: [-1, 1], // Установка диапазона для оси X
+    titlefont: { size: 10 }, // Уменьшение размера шрифта для заголовка оси X
+    tickfont: { size: 8 }, // Уменьшение размера шрифта для делений на оси X
+  },
+  yaxis: {
+    title: "W1",
+    showgrid: true,
+    zeroline: true,
+    range: [-1, 1], // Установка диапазона для оси Y
+    titlefont: { size: 10 }, // Уменьшение размера шрифта для заголовка оси X
+    tickfont: { size: 8 }, // Уменьшение размера шрифта для делений на оси X
+  },
+  autosize: true,
+  margin: { l: 30, r: 50, b: 50, t: 50, pad: 4 }, // Настройка отступов
+};
+
+export interface DataPoint {
+  x: number;
+  y: number;
+  color: string; // HEX, RGB или имя цвета
+}
+
+interface FourGridPlotPanelProps {
+  dataLeftUp: DataPoint[];
+  dataLeftDown: DataPoint[];
+  dataRightUp: DataPoint[];
+  dataRightDown: DataPoint[];
+}
+
+const FourGridPlotPanel: React.FC<FourGridPlotPanelProps> = ({
+  dataLeftUp,
+  dataLeftDown,
+  dataRightUp,
+  dataRightDown,
 }) => {
-  // Допустим, что data1 и data2 это данные для N1 и N2 соответственно
+  const chartLeftUpRef = useRef<HTMLDivElement>(null);
+  const chartLeftDownRef = useRef<HTMLDivElement>(null);
+  const chartRightUpRef = useRef<HTMLDivElement>(null);
+  const chartRightDownRef = useRef<HTMLDivElement>(null);
 
-  // Инициализация графиков после монтирования компонента
-  useEffect(() => {
-    let chart1: Chart | null = null;
-    // Настройка и создание каждого графика здесь
-    // Пример:
-    const canvas1 = document.getElementById("chart1");
-    if (canvas1) {
-      const ctx1 = (canvas1 as HTMLCanvasElement).getContext("2d");
-      if (ctx1) {
-        chart1 = new Chart(ctx1, {
-          type: "line", // или другой тип графика в зависимости от ваших нужд
-          data: data1,
-          options: {
-            // Настройка осей и меток для первого графика
-          },
-        });
-      }
-    }
-    // Повторите для остальных графиков
+  const createPlotData = (dataPoints: DataPoint[]) => {
+    return dataPoints.map((point) => ({
+      x: [point.x],
+      y: [point.y],
+      type: "scatter" as const,
+      mode: "markers" as const,
+      marker: { color: point.color },
+    }));
+  };
 
-    // Очистка при размонтировании компонента
-    return () => {
-      if (chart1) {
-        chart1.destroy();
-        chart1 = null;
-      }
-      // Очистка для остальных графиков
-    };
-  }, [data1, data2]);
+  const plotDataLeftUp = createPlotData(dataLeftUp);
+  const plotDataLeftDown = createPlotData(dataLeftDown);
+  const plotDataRightUp = createPlotData(dataRightUp);
+  const plotDataRightDown = createPlotData(dataRightDown);
 
   return (
     <div className="flex flex-wrap w-full h-full">
-      <div className="flex-1">
-        <div className="w-full h-1/2 p-2">
-          <canvas id="chart1"></canvas>
+      <div className="flex flex-row w-full h-1/2">
+        <div ref={chartLeftUpRef} className="w-1/2 h-full" id="chartLeftUp">
+          <Plot
+            data={plotDataLeftUp}
+            layout={plotLayout}
+            config={plotConfig}
+            useResizeHandler={true}
+            style={{ width: "100%", height: "100%" }}
+          />
         </div>
-        <div className="w-full h-1/2 p-2">
-          <canvas id="chart3"></canvas>
+        <div
+          ref={chartLeftDownRef}
+          className="w-1/2 h-full"
+          id="chartLeftDownRef"
+        >
+          <Plot
+            data={plotDataLeftDown}
+            layout={plotLayout}
+            config={plotConfig}
+            useResizeHandler={true}
+            style={{ width: "100%", height: "100%" }}
+          />
         </div>
       </div>
-      <div className="flex-1">
-        <div className="w-full h-1/2 p-2">
-          <canvas id="chart2"></canvas>
+      <div className="flex flex-row w-full h-1/2">
+        <div
+          ref={chartRightUpRef}
+          className="w-1/2 h-full"
+          id="chartRightUpRef"
+        >
+          <Plot
+            data={plotDataRightUp}
+            layout={plotLayout}
+            config={plotConfig}
+            useResizeHandler={true}
+            style={{ width: "100%", height: "100%" }}
+          />
         </div>
-        <div className="w-full h-1/2 p-2">
-          <canvas id="chart4"></canvas>
+        <div
+          ref={chartRightDownRef}
+          className="w-1/2 h-full"
+          id="chartRightDownRef"
+        >
+          <Plot
+            data={plotDataRightDown}
+            layout={plotLayout}
+            config={plotConfig}
+            useResizeHandler={true}
+            style={{ width: "100%", height: "100%" }}
+          />
         </div>
       </div>
     </div>

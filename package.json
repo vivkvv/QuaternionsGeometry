@@ -16,12 +16,15 @@
     "autoprefixer": "^10.4.16",
     "chart.js": "^4.4.1",
     "gh-pages": "^6.1.1",
+    "jsxgraph": "^1.6.2",
     "kd-tree-javascript": "^1.0.3",
+    "plotly.js": "^2.28.0",
     "postcss": "^8.4.32",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
+    "react-plotly.js": "^2.6.0",
     "react-scripts": "5.0.1",
     "reactcss": "^1.2.3",
     "tailwindcss": "^3.4.0",
@@ -56,6 +59,8 @@
     ]
   },
   "devDependencies": {
+    "@types/plotly.js": "^2.12.32",
+    "@types/react-plotly.js": "^2.6.3",
     "@types/three": "^0.160.0"
   }
 }
