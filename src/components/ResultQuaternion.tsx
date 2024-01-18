@@ -31,10 +31,8 @@ const ResultQuaternion: React.FC<ResultQuaternionProps> = ({
       .multiply(threeQuaternion2.clone());
 
     // Форматируем описание кватерниона в строку
-    const description = `Result: (${threeResultQuaternion.w.toFixed(2)},
-    ${threeResultQuaternion.x.toFixed(2)}, ${threeResultQuaternion.y.toFixed(
-      2
-    )}, ${threeResultQuaternion.z.toFixed(2)})`;
+    const description = `Result: (w: ${threeResultQuaternion.w.toFixed(2)},
+    x: ${threeResultQuaternion.x.toFixed(2)}, y: ${threeResultQuaternion.y.toFixed(2)}, z: ${threeResultQuaternion.z.toFixed(2)})`;
     setQuaternionDescription(description);
   });
 

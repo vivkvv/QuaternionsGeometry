@@ -17,7 +17,7 @@ const basePlotLayout = {
     showgrid: true,
     zeroline: true,
     range: [-1.1, 1.1],
-    dtick: 0.5,
+    dtick: 1.0,
     tick0: 0,
     tickcolor: "white",
     titlefont: {
@@ -38,7 +38,7 @@ const basePlotLayout = {
     showgrid: true,
     zeroline: true,
     range: [-1.1, 1.1],
-    dtick: 0.5,
+    dtick: 1.0,
     tick0: 0,
     tickcolor: "white",
     titlefont: {
