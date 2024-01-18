@@ -6,28 +6,19 @@ interface QuaternionPropertiesProps {
   index: number; // Добавляем пропс для индекса
   quaternion: TrigonometricalQuaternion; // Добавляем новый пропс
   setQuaternion: (newQuaternion: TrigonometricalQuaternion) => void; // Добавляем новый пропс
+  time: number;
 }
 
 const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
   index,
   quaternion, // Это текущее состояние кватерниона
   setQuaternion, // Это функция для обновления кватерниона
+  time,
 }) => {
   // ... состояние и обработчики ...
   const [phi0, setPhi0] = useState(quaternion.phi0); // Угол в градусах
   const [nu, setNu] = useState(quaternion.nu); // Частота ν
   const [n, setN] = useState(quaternion.n);
-  //const [color, setColor] = useState(quaternion.color);
-
-  // const handleColorChange = (color: any) => {
-  //   //const newColor = color; //`rgba(${color.rgb.r}, ${color.rgb.g}, ${color.rgb.b}, ${color.rgb.a})`;
-  //   const newQuaternion = {
-  //     ...quaternion,
-  //     color: color, // Обновляем цвет в кватернионе
-  //   };
-  //   setQuaternion(newQuaternion); // Устанавливаем новое состояние кватерниона
-  //   setColor(color);
-  // };
 
   const handlePhi0Change = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newPhi0 = parseFloat(event.target.value);
@@ -85,6 +76,15 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
     };
   }, [phi0, nu]);
 
+  const trigonometricPartNumber = useMemo(() => {
+    const phi0Radians = (phi0 * Math.PI) / 180;
+    const angularFrequency = 2 * Math.PI * nu;
+    return {
+      cosValue: Math.cos(phi0Radians + angularFrequency * time),
+      sinValue: Math.sin(phi0Radians + angularFrequency * time),
+    };
+  }, [phi0, nu, time]);
+
   const quaternionFormula = useMemo(() => {
     if (magnitude === 0) {
       return (
@@ -100,8 +100,20 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
       n2: (n.n2 / magnitude).toFixed(2),
       n3: (n.n3 / magnitude).toFixed(2),
     };
-    return `Q${index} = ${trigonometricPart.cosValue} + (${normalizedN.n1}i + ${normalizedN.n2}j + ${normalizedN.n3}k) * ${trigonometricPart.sinValue}`;
-  }, [index, magnitude, n, trigonometricPart]);
+    const N = {
+      n1: n.n1 / magnitude,
+      n2: n.n2 / magnitude,
+      n3: n.n3 / magnitude,
+    };
+    const { cosValue: cv, sinValue: sv } = trigonometricPartNumber;
+    return `Q${index} = ${trigonometricPart.cosValue} + (${normalizedN.n1}i + ${
+      normalizedN.n2
+    }j + ${normalizedN.n3}k) * ${trigonometricPart.sinValue} = ${cv.toFixed(
+      2
+    )} + ${(N.n1 * sv).toFixed(2)}i + ${(N.n2 * sv).toFixed(2)}j+ ${(
+      N.n3 * sv
+    ).toFixed(2)}k`;
+  }, [index, magnitude, n, trigonometricPart, trigonometricPartNumber, time]);
 
   return (
     <div className="flex flex-col bg-gray-100">
@@ -121,7 +133,10 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
 
       <div className="flex justify-between items-center gap-x-2">
         <div className="flex flex-col items-center w-full">
-          <label htmlFor={`phi0${index}`} className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor={`phi0${index}`}
+            className="text-sm font-medium text-gray-700"
+          >
             φ₀°
           </label>
           <input
@@ -134,7 +149,10 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
           />
         </div>
         <div className="flex flex-col items-center w-full">
-          <label htmlFor={`nu${index}`} className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor={`nu${index}`}
+            className="text-sm font-medium text-gray-700"
+          >
             ν, Hz
           </label>
           <input
@@ -149,7 +167,10 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
       </div>
       <div className="flex justify-between items-center gap-x-2 mb-4">
         <div className="flex flex-col items-center w-full">
-          <label htmlFor={`Nx${index}`} className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor={`Nx${index}`}
+            className="text-sm font-medium text-gray-700"
+          >
             n<sub>x</sub>
           </label>
           <input
@@ -162,7 +183,10 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
           />
         </div>
         <div className="flex flex-col items-center w-full">
-          <label htmlFor={`Ny${index}`} className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor={`Ny${index}`}
+            className="text-sm font-medium text-gray-700"
+          >
             n<sub>y</sub>
           </label>
           <input
@@ -175,7 +199,10 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
           />
         </div>
         <div className="flex flex-col items-center w-full">
-          <label htmlFor={`Nz${index}`} className="text-sm font-medium text-gray-700">
+          <label
+            htmlFor={`Nz${index}`}
+            className="text-sm font-medium text-gray-700"
+          >
             n<sub>z</sub>
           </label>
           <input

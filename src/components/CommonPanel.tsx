@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import QuaternionProperties from "./QuaternionProperties";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
 import SketchExample from "./SketchPicker";
+import ResultQuaternion from "./ResultQuaternion";
 
 // Добавляем интерфейс для пропсов
 interface CommonPanelProps {
@@ -25,7 +26,7 @@ const CommonPanel: React.FC<CommonPanelProps> = ({
   quaternion2,
   setQuaternion2,
   spheraColor,
-  setSpheraColor
+  setSpheraColor,
 }) => {
   const [showOptions, setShowOptions] = useState(false);
   const [quaternion1Color, setQuaternion1Color] = useState(quaternion1.color);
@@ -112,7 +113,7 @@ const CommonPanel: React.FC<CommonPanelProps> = ({
                   a: spheraColor.color.a,
                 }}
                 // onChange={handleQuaternion2ColorChange}
-                onChange={(color: any) => setSpheraColor({color: color})}
+                onChange={(color: any) => setSpheraColor({ color: color })}
               />
             </div>{" "}
           </div>
@@ -154,12 +155,20 @@ const CommonPanel: React.FC<CommonPanelProps> = ({
         index={1}
         quaternion={quaternion1}
         setQuaternion={setQuaternion1}
+        time={time}
       />
       <hr className="my-4" />
       <QuaternionProperties
         index={2}
         quaternion={quaternion2}
         setQuaternion={setQuaternion2}
+        time={time}
+      />
+      <hr className="my-4" />
+      <ResultQuaternion
+        time={time}
+        quaternion1={quaternion1}
+        quaternion2={quaternion2}
       />
       <hr className="my-4" />
     </div>
