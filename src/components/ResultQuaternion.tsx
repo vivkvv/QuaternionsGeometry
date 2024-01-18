@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
 import LocalCoordinateSystem from "./scene/LocalCoordinateSystem";
 
@@ -34,7 +34,7 @@ const ResultQuaternion: React.FC<ResultQuaternionProps> = ({
     const description = `Result: (w: ${threeResultQuaternion.w.toFixed(2)},
     x: ${threeResultQuaternion.x.toFixed(2)}, y: ${threeResultQuaternion.y.toFixed(2)}, z: ${threeResultQuaternion.z.toFixed(2)})`;
     setQuaternionDescription(description);
-  });
+  }, [time, quaternion1, quaternion2]);
 
   return <div>{quaternionDescription}</div>;
 };

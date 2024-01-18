@@ -1,23 +1,21 @@
 import React, { useMemo, useState } from "react";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
-// import SketchExample from "./SketchPicker";
 
 interface QuaternionPropertiesProps {
-  index: number; // Добавляем пропс для индекса
-  quaternion: TrigonometricalQuaternion; // Добавляем новый пропс
-  setQuaternion: (newQuaternion: TrigonometricalQuaternion) => void; // Добавляем новый пропс
+  index: number;
+  quaternion: TrigonometricalQuaternion;
+  setQuaternion: (newQuaternion: TrigonometricalQuaternion) => void;
   time: number;
 }
 
 const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
   index,
-  quaternion, // Это текущее состояние кватерниона
-  setQuaternion, // Это функция для обновления кватерниона
+  quaternion,
+  setQuaternion,
   time,
 }) => {
-  // ... состояние и обработчики ...
-  const [phi0, setPhi0] = useState(quaternion.phi0); // Угол в градусах
-  const [nu, setNu] = useState(quaternion.nu); // Частота ν
+  const [phi0, setPhi0] = useState(quaternion.phi0);
+  const [nu, setNu] = useState(quaternion.nu);
   const [n, setN] = useState(quaternion.n);
 
   const handlePhi0Change = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +111,7 @@ const QuaternionProperties: React.FC<QuaternionPropertiesProps> = ({
     )} + ${(N.n1 * sv).toFixed(2)}i + ${(N.n2 * sv).toFixed(2)}j+ ${(
       N.n3 * sv
     ).toFixed(2)}k`;
-  }, [index, magnitude, n, trigonometricPart, trigonometricPartNumber, time]);
+  }, [index, magnitude, n, trigonometricPart, trigonometricPartNumber]);
 
   return (
     <div className="flex flex-col bg-gray-100">
