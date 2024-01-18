@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { TrigonometricalQuaternion } from "../TrigonometricalQuaternion";
 import PlotPanel from "./PlotPanel";
 import PlotViewContext from "./PlotViewContext";
-import FourGridPlotPanel, { DataPoint } from "./scene/FourGridPlotPanel";
+import FourGridPlotPanel from "./scene/FourGridPlotPanel";
 
 interface PlotsManagerProps {
   time: number;
@@ -42,20 +42,13 @@ const PlotsManager: React.FC<PlotsManagerProps> = ({
             }
           }
 
-          const dataFor: DataPoint[] = [
-            { x: 0.1, y: 0.2, color: 'red' },
-            { x: 0.3, y: 0.4, color: 'blue' },
-            { x: 0.5, y: 0.6, color: 'green' }
-          ];
-
           return (
             <div key={coordinateSystem} className={panelClasses}>
               {coordinateSystem === 3 ? (
                 <FourGridPlotPanel
-                  dataLeftUp={dataFor}
-                  dataLeftDown={dataFor}
-                  dataRightUp={dataFor}
-                  dataRightDown={dataFor}
+                  time={time}
+                  quaternion1={quaternion1}
+                  quaternion2={quaternion2}
                 />
               ) : (
                 <PlotPanel

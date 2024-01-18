@@ -273,7 +273,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
     return Math.sqrt(d2);
   }
 
-  getThreeQuaternionFromTrigonometricalQuaternion(
+  static getThreeQuaternionFromTrigonometricalQuaternion(
     time: number,
     quaternion: TrigonometricalQuaternion
   ): THREE.Quaternion {
@@ -634,7 +634,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
     rgbaColor: any
   ): THREE.Quaternion {
     const threeQuaternion =
-      this.getThreeQuaternionFromTrigonometricalQuaternion(time, quaternion);
+    LocalCoordinateSystem.getThreeQuaternionFromTrigonometricalQuaternion(time, quaternion);
 
     const color = new THREE.Color(
       `rgb(${rgbaColor.r}, ${rgbaColor.g}, ${rgbaColor.b})`
