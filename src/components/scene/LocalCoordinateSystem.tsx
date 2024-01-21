@@ -478,6 +478,23 @@ class LocalCoordinateSystem extends THREE.Object3D {
     ring2.visible = visible;
   }
 
+  clearTraces() {
+    for (let i = this.children.length - 1; i >= 0; i--) {
+      const child = this.children[i];
+      if (child.name === 'trace') {
+        this.remove(child);
+      }
+    }
+  }
+
+  updateQuaternionVisibility(id: string, visibility: boolean) //"1", isQuaternion1VisibleRef.current);
+  {
+    const line = this.getObjectByName(`quaternionLine-${id}`)as THREE.Line;
+    if(line){
+      line.visible = visibility;
+    }
+  }
+
   updateThreeQuaternionLine(
     id: string,
     threeQuaternion: THREE.Quaternion,
@@ -532,7 +549,7 @@ class LocalCoordinateSystem extends THREE.Object3D {
         threeQuaternion.y,
         threeQuaternion.z
       );
-      this.add(sphere);
+      line.add(sphere);
 
       // add small spheres at points +1 and -1
       const normalizedVector = new THREE.Vector3(threeQuaternion.x, threeQuaternion.y, threeQuaternion.z).normalize();
@@ -541,12 +558,12 @@ class LocalCoordinateSystem extends THREE.Object3D {
       let endSphere = new THREE.Mesh(endSphereGeometry, sphereMaterial);
       endSphere.name = `quaternionEndSphera1-${id}`;
       endSphere.position.set(normalizedVector.x, normalizedVector.y, normalizedVector.z);
-      this.add(endSphere);
+      line.add(endSphere);
 
       endSphere = new THREE.Mesh(endSphereGeometry, sphereMaterial);
       endSphere.name = `quaternionEndSphera2-${id}`;
       endSphere.position.set(-normalizedVector.x, -normalizedVector.y, -normalizedVector.z);
-      this.add(endSphere);
+      line.add(endSphere);
     } else {
       line.geometry.setFromPoints(points);
       if (line.material instanceof THREE.LineBasicMaterial) {

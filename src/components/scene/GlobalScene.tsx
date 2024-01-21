@@ -16,6 +16,10 @@ interface GlobalSceneProps {
   spheraColor: any;
   isCylindersVisible: boolean;
   isGreatCirclesVisible: boolean;
+  isQuaternion1Visible: boolean;
+  isQuaternion2Visible: boolean;
+  isResultQuaternionVisible: boolean;
+  clearTraces: boolean
 }
 
 const GlobalScene: React.FC<GlobalSceneProps> = ({
@@ -29,6 +33,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   spheraColor,
   isCylindersVisible,
   isGreatCirclesVisible,
+  isQuaternion1Visible,
+  isQuaternion2Visible,
+  isResultQuaternionVisible,
+  clearTraces
 }) => {
   const { activePlotIndex } = useContext(PlotViewContext);
 
@@ -43,6 +51,10 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
   const spheraColorRef = useRef(spheraColor);
   const isCylindersVisibleRef = useRef(isCylindersVisible);
   const isGreatCirclesVisibleRef = useRef(isGreatCirclesVisible);
+
+  const isQuaternion1VisibleRef = useRef(isQuaternion1Visible);
+  const isQuaternion2VisibleRef = useRef(isQuaternion2Visible);
+  const isResultQuaternionVisibleRef = useRef(isResultQuaternionVisible);
 
   const cameraRef = useRef(new THREE.Camera());
   const perspectiveCamera = useMemo(() => {
@@ -156,6 +168,22 @@ const GlobalScene: React.FC<GlobalSceneProps> = ({
     localSystem.updateCylinderVisibility("4", isCylindersVisibleRef.current);
     localSystem.updateCylinderVisibility("5", isCylindersVisibleRef.current);
   }, [isCylindersVisible, localSystem]);
+
+  useEffect(() => {
+    isQuaternion1VisibleRef.current = isQuaternion1Visible;
+    isQuaternion2VisibleRef.current = isQuaternion2Visible;
+    isResultQuaternionVisibleRef.current = isResultQuaternionVisible;
+
+    localSystem.updateQuaternionVisibility("1", isQuaternion1VisibleRef.current);
+    localSystem.updateQuaternionVisibility("2", isQuaternion2VisibleRef.current);
+    localSystem.updateQuaternionVisibility("3", isResultQuaternionVisibleRef.current);    
+
+  }, [isQuaternion1Visible, isQuaternion2Visible, isResultQuaternionVisible, localSystem])
+
+  useEffect(() => {
+    localSystem.clearTraces();
+  }, [clearTraces, localSystem]);
+
 
   useEffect(() => {
     isGreatCirclesVisibleRef.current = isGreatCirclesVisible;

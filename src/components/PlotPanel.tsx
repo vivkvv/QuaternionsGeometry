@@ -45,11 +45,24 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
   const [localIsCylinders, localSetCylinders] = useState(false);
   const [localIsGreatCircles, localSetGreatCircles] = useState(false);
 
+  const [localIsQuaternion1Visible, localSetQuaternion1Visible] =
+    useState(true);
+  const [localIsQuaternion2Visible, localSetQuaternion2Visible] =
+    useState(true);
+  const [localIsResultQuaternionVisible, localSetResultQuaternionVisible] =
+    useState(true);
+
+  const [clearTraces, setClearTraces] = useState(false);
+
   useEffect(() => {
     if (controlPanelRef.current) {
       setControlPanelHeight(controlPanelRef.current.offsetHeight);
     }
   }, []);
+
+  const handleClearTraces = () => {
+    setClearTraces(!clearTraces);
+  };  
 
   return (
     <div className="border-2 border-gray-200 rounded-lg overflow-hidden h-full">
@@ -70,8 +83,15 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           setIsCylinders={localSetCylinders}
           isGreatCircles={localIsGreatCircles}
           setIsGreatCircles={localSetGreatCircles}
+          isQuaternion1Visible={localIsQuaternion1Visible}
+          setIsQuaternion1Visible={localSetQuaternion1Visible}
+          isQuaternion2Visible={localIsQuaternion2Visible}
+          setIsQuaternion2Visible={localSetQuaternion2Visible}
+          isResultQuaternionVisible={localIsResultQuaternionVisible}
+          setIsResultQuaternionVisible={localSetResultQuaternionVisible}
           // isExclusiveViewActive={isExclusiveViewActive}
           onToggleExclusiveView={onToggleExclusiveView}
+          onClearTraces={handleClearTraces}
         />
       </div>
       <div style={{ height: `calc(100% - ${controlPanelHeight}px)` }}>
@@ -86,6 +106,10 @@ const PlotPanel: React.FC<PlotPanelProps> = ({
           spheraColor={spheraColor}
           isCylindersVisible={localIsCylinders}
           isGreatCirclesVisible={localIsGreatCircles}
+          isQuaternion1Visible={localIsQuaternion1Visible}
+          isQuaternion2Visible={localIsQuaternion2Visible}
+          isResultQuaternionVisible={localIsResultQuaternionVisible}
+          clearTraces={clearTraces}
         />
       </div>
     </div>

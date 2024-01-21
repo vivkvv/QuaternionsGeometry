@@ -19,8 +19,16 @@ interface ControlPanelProps {
   isGreatCircles: boolean;
   setIsGreatCircles: (setGreatCircles: boolean) => void;
 
+  isQuaternion1Visible: boolean;
+  setIsQuaternion1Visible: (setQuaternion1Visible: boolean) => void;
+  isQuaternion2Visible: boolean;
+  setIsQuaternion2Visible: (setQuatenion2Visible: boolean) => void;
+  isResultQuaternionVisible: boolean;
+  setIsResultQuaternionVisible: (setResultQuaternionVisible: boolean) => void;
+
   // isExclusiveViewActive: boolean;
   onToggleExclusiveView: () => void;
+  onClearTraces: () => void;
 }
 
 const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -40,8 +48,16 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
   isGreatCircles,
   setIsGreatCircles,
 
+  isQuaternion1Visible,
+  setIsQuaternion1Visible,
+  isQuaternion2Visible,
+  setIsQuaternion2Visible,
+  isResultQuaternionVisible,
+  setIsResultQuaternionVisible,
+
   // isExclusiveViewActive,
   onToggleExclusiveView,
+  onClearTraces,
 }) => {
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -106,6 +122,12 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
         />
       </div>
 
+      <div className="flex items-center mr-4">
+        <button onClick={onClearTraces} className="btn">
+          Clear traces
+        </button>
+      </div>
+
       <div className="flex items-center">
         <label htmlFor={`cameraType${index}`} className="text-xs mr-2">
           Orthographic
@@ -127,6 +149,41 @@ const ControlPanel: React.FC<ControlPanelProps> = ({
 
         {showDropdown && (
           <div className="absolute border border-gray-300 bg-white p-2">
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={isQuaternion1Visible}
+                  onChange={(e) => setIsQuaternion1Visible(e.target.checked)}
+                />
+                <span className="ml-2">Quaternion 1</span>
+              </label>
+            </div>
+
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={isQuaternion2Visible}
+                  onChange={(e) => setIsQuaternion2Visible(e.target.checked)}
+                />
+                <span className="ml-2">Quaternion 2</span>
+              </label>
+            </div>
+
+            <div>
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={isResultQuaternionVisible}
+                  onChange={(e) =>
+                    setIsResultQuaternionVisible(e.target.checked)
+                  }
+                />
+                <span className="ml-2">Result quaternion</span>
+              </label>
+            </div>
+
             <div>
               <label className="flex items-center">
                 <input
