@@ -1,3 +1,11 @@
+# Documentation and description
+
+You could find all need documentation in 'documents' folder.
+For video explanation see
+https://www.youtube.com/watch?v=m92PeX1wDgI&list=PLdCIDX-rXAfTDQzhWGkgnF0K4zb0ySsBO&index=2&pp=gAQBiAQBsAQB
+and
+https://www.youtube.com/watch?v=ORscgqlzpK4&list=PLdCIDX-rXAfTDQzhWGkgnF0K4zb0ySsBO&index=1&pp=gAQBiAQBsAQB
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
