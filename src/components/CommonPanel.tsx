@@ -52,8 +52,53 @@ const CommonPanel: React.FC<CommonPanelProps> = ({
     setQuaternion2Color(color);
   };
 
+  const [showAdditionalInfo, setShowAdditionalInfo] = useState(false);
+
   return (
     <div style={{ width: "25%", padding: "10px", backgroundColor: "#f0f0f0" }}>
+      <button
+        onClick={() => setShowAdditionalInfo(!showAdditionalInfo)}
+        className="flex items-center justify-between w-full px-4 py-2 text-left text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+      >
+        Additional info
+        <span
+          className={`ml-2 transform ${showAdditionalInfo ? "rotate-90" : ""}`}
+        >
+          ▶
+        </span>
+      </button>
+      {showAdditionalInfo && (
+        <div className="p-4 mt-2 bg-blue-100 rounded-md">
+          <p>
+            <a
+              href="https://www.youtube.com/playlist?list=PLdCIDX-rXAfTDQzhWGkgnF0K4zb0ySsBO"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 hover:text-blue-900"
+            >
+              Quaternions YouTube Playlist
+            </a>
+          </p>
+          <p>
+            <a
+              href="https://github.com/vivkvv/QuaternionsGeometry/tree/master/documents"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 hover:text-blue-900"
+            >
+              GitHub Article's Folder
+            </a>
+          </p>
+          <p>
+            <a
+              href="mailto:vivkvv@gmail.com"
+              className="text-blue-700 hover:text-blue-900"
+            >
+              Send Email To Author
+            </a>
+          </p>
+        </div>
+      )}
       <div className="font-bold text-lg">
         <p>
           Q = cos(&phi;<sub>0</sub> + 2&pi;&nu;t) + (i&middot;cos&alpha; +
@@ -61,9 +106,7 @@ const CommonPanel: React.FC<CommonPanelProps> = ({
           <sub>0</sub> + 2&pi;&nu;t)
         </p>
       </div>
-
       <hr className="my-4" />
-
       <button
         onClick={() => setShowOptions(!showOptions)}
         className="flex items-center justify-between"
@@ -133,7 +176,6 @@ const CommonPanel: React.FC<CommonPanelProps> = ({
           </div> */}
         </div>
       )}
-
       <hr className="my-4" />
       <div className="flex items-center mb-4 space-x-2">
         <label
